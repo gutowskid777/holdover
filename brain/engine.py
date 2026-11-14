@@ -18,6 +18,9 @@ BACK = re.compile(r"\b(go back|back up|previous (step|question)|last (step|quest
 ASKING = re.compile(r"\?|^\W*(what|how|where|which|why|should|can i|can we|do i|do we|is it|does it)\b", re.I)
 NEG = re.compile(r"\b(not|no|isn'?t|aren'?t|wasn'?t|never|stopped|without|still no|hasn'?t|doesn'?t|don'?t|can'?t)\b", re.I)
 
+# Questions about what happens AFTER an action can never be known in advance, so skip-ahead leaves them alone.
+LATER = re.compile(r"\b(slowing|stopped|stopping|now|still|yet|better|worse|came out|come out|clear|staying|working|improv\w*|any change|after)\b", re.I)
+
 GREETING = "Emergency line. I work with no signal. What is happening?"
 ASK_WHAT = "Tell me what happened. Who is hurt, and how?"
 STILL_HERE = "I am still here. Tell me if anything changes."
@@ -28,7 +31,7 @@ NEXT_PROBLEM = "Now the other problem."
 HERE = "Okay. I am here."
 NO_FACT = "I don't have that. Stay on this step."
 DONE_OR_CANT = "Say done, or say you cannot."
-WHICH = "I need one thing. Is it bleeding, a burn, a broken bone, a bite or a sting, an allergic reaction, choking, someone not responding, heat, or cold?"
+WHICH = "Say the injury in a few words. Like bleeding, a burn, or not breathing."
 
 
 def load_protocols(folder) -> dict:
@@ -127,6 +130,8 @@ class Session:
         self.pending = []      # ("start", pid) or ("resume", pid, node id): problems waiting their turn
         self.triage_text = ""
         self.idle_said = False
+        self.known = {}        # (protocol id, node id) -> answer the caller already gave, before being asked
+        self.skipped = 0
 
     # ---------- helpers
     def _log(self, kind, text):
@@ -163,9 +168,18 @@ class Session:
                     if text and keyword_hit(text, e["words"]):
                         target = e["goto"]
                         break
+                self._prefill(text)
             self.node = self.proto["nodes"][target]
             n, kind = self.node, self.node["kind"]
             self.visited.append(f"{self.proto['id']}.{n['id']}")
+            got = self.known.pop((self.proto["id"], n["id"]), None)
+            if kind == "ask" and got in options(n) and not n.get("noskip"):
+                # The caller already told us. Do not make them answer it again: walk on.
+                self._log("skip", f"{question_of(n)} -> {got if got in ('yes', 'no') else options(n)[got][0]} (already said, not asked)")
+                self.history.append((self.proto["id"], n["id"]))
+                self.skipped += 1
+                target = options(n)[got][1]
+                continue
             say.append(n[kind])
             if n.get("log") and (kind != "do" or n.get("then")):
                 self._log("action", n["log"])
@@ -197,6 +211,32 @@ class Session:
         say.append(FIRST)
         self.misses = 0
         self._enter("@" + pid, say, text)
+
+    def _prefill(self, text):
+        """Skip-ahead: one model call reads what the caller said and answers the questions still to come."""
+        if not text or len(text.split()) < 6 or not hasattr(self.llm, "prefill"):
+            return
+        pid, nodes = self.proto["id"], self.proto["nodes"]
+        seen = {v.split(".", 1)[1] for v in self.visited if v.startswith(pid + ".")}
+        # Only the next few questions on the road ahead, nearest first.
+        start = self.node["id"] if self.node and self.node["id"] in nodes and self.proto["nodes"].get(self.node["id"]) is self.node else self.proto["start"]
+        order, queue, done = [], [start], set()
+        while queue and len(order) < 6:
+            nid = queue.pop(0)
+            if nid in done or nid.startswith("@") or nid not in nodes:
+                continue
+            done.add(nid)
+            n = nodes[nid]
+            if n["kind"] == "ask" and nid not in seen and not LATER.search(question_of(n)) \
+                    and not (n.get("steady") or n.get("quiet") or n.get("metronome") or n.get("noskip")):
+                order.append(nid)
+            queue += targets(n)
+        items = [(nid, question_of(nodes[nid]), {k: m for k, (m, _) in options(nodes[nid]).items()}) for nid in order]
+        try:
+            for nid, key in self.llm.prefill(items, text).items():
+                self.known[(pid, nid)] = key
+        except Exception:
+            pass
 
     def _remind(self, n):
         """Short form of the current step, for after a side answer or an unclear reply."""
@@ -285,6 +325,8 @@ class Session:
         if key in opts:
             self.misses = 0
             self.history.append((self.proto["id"], n["id"]))
+            if len(text.split()) >= 12:
+                self._prefill(text)
             if kind == "do":
                 if key == "done" and n.get("log"):
                     self._log("action", n["log"])

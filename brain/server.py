@@ -24,17 +24,16 @@ def acknowledge(text):
     smells like an instruction is thrown away and the scripted step speaks alone."""
     try:
         out = llm.chat("ack",
-            "You are a calm, steady emergency dispatcher on a call. Reply with ONE short sentence, at most 9 words, "
+            "You are a calm, steady emergency dispatcher on a call. Reply with ONE short sentence, at most 6 words, "
             "that shows you heard the caller, naming the key detail they said. Sound like a person, not a form. "
             "Never start with 'I hear' or 'I understand'. Vary your wording. "
-            "Examples of the style: 'Okay. A hatchet cut to the leg. I am with you.' / 'Got it, a snake bite on the ankle.' / "
-            "'Okay, boiling water on your hand. Stay with me.' "
+            "Examples of the style: 'Okay, a hatchet cut.' / 'Got it, a snake bite.' / 'Okay, boiling water on your hand.' / 'Okay, he collapsed.' "
             "No advice. No instructions. No questions. No promises about how it will turn out.",
-            f"Caller: \"{text}\"\n\nYour one short sentence:", max_tokens=22, temperature=0.5)
+            f"Caller: \"{text}\"\n\nYour one short sentence:", max_tokens=14, temperature=0.5)
     except Exception:
         return None
     out = out.strip().strip('"\'').split("\n")[0]
-    if not out or "?" in out or len(out.split()) > 13 or ADVICE.search(out.replace("Stay with me", "")):
+    if not out or "?" in out or len(out.split()) > 8 or ADVICE.search(out.replace("Stay with me", "")):
         return None
     return out if out[-1] in ".!" else out + "."
 

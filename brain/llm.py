@@ -65,6 +65,46 @@ class Bonsai:
         picks = self.triage_all(text, protocols)
         return picks[0] if picks else None
 
+    def prefill(self, items, text):
+        """Skip-ahead. items = [(id, question, {label: meaning})]. Returns {id: label} ONLY for questions
+        the caller has already clearly answered in what they said. Everything else stays unasked-and-unknown."""
+        if not items:
+            return {}
+        qs = []
+        for i, (_, q, opts) in enumerate(items, 1):
+            if set(opts) == {"yes", "no"}:
+                labels = "YES or NO"
+            else:
+                labels = " / ".join(f"{k.upper()} ({m})" for k, m in opts.items())
+            qs.append(f'{i}. "{q}"  [{labels}]')
+        out = self.chat("skip-ahead",
+            "You are the ears of an emergency first-aid line. The caller has described what is happening. Below are "
+            "questions the dispatcher would ask next, each with its allowed labels in brackets. List ONLY the "
+            "questions the caller has ALREADY answered in what they said. One per line, in the form "
+            "'number: LABEL', using exactly one of that question's labels in capitals, nothing else. "
+            "Example: if the caller said 'its gushing and nothing is in the wound', and question 1 is "
+            "'Is the blood pouring?' and question 2 is 'Is something stuck in the wound?', you reply:\n1: YES\n2: NO\n"
+            "Use only what the caller actually said. Never guess. Leave out questions the caller did not answer. "
+            "If none were answered, reply NONE.",
+            f"Caller said: \"{text}\"\n\nQuestions:\n" + "\n".join(qs) + "\n\nAnswered:",
+            max_tokens=6 * len(items) + 4, temperature=0.0)
+        found = {}
+        for line in out.splitlines():
+            m = re.match(r"\s*(\d+)\s*[:.)]\s*(.+)", line)
+            if not m:
+                continue
+            i = int(m.group(1)) - 1
+            if not 0 <= i < len(items):
+                continue
+            nid, _, opts = items[i]
+            tail = m.group(2).upper()
+            if "UNKNOWN" in tail:
+                continue
+            hits = [k for k in opts if re.search(rf"\b{re.escape(k.upper())}\b", tail)]
+            if len(hits) == 1:
+                found[nid] = hits[0]
+        return found
+
     def interpret(self, question, opts, text):
         keys = list(opts)
         menu = "\n".join(f"{k.upper()} = {opts[k]}" for k in keys)

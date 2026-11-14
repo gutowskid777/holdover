@@ -277,16 +277,16 @@ final class Voice {
             await playFile(file)
             return
         }
-        guard let tts else { await systemSpeak(text); return }
+        guard tts != nil else { await systemSpeak(text); return }
         do {
-            let opts = GenerationOptions(concurrentWorkerCount: 1)
-            // Returning false from the callback stops generation as soon as stop() is called.
-            let r = try await tts.play(text: text, speaker: speaker, language: .english, options: opts) { [weak self] _ in
-                (self?.isStopped ?? false) ? false : nil
-            }
-            if useCache, !isStopped, !r.audio.isEmpty {
-                try? await save(r.audio, rate: r.sampleRate, to: file)
-            }
+            // Generate the whole sentence first, then play it like a cached clip. The streaming
+            // play() path stalled on live lines and left the microphone muted.
+            let t = Date()
+            let r = try await render(text)
+            if isStopped { return }
+            try await save(r.samples, rate: r.rate, to: file)
+            log(String(format: "generated live in %.1fs: %@", Date().timeIntervalSince(t), text))
+            await playFile(file)
         } catch {
             if !isStopped { log("argmax tts failed (\(error)); using system voice for this line"); await systemSpeak(text) }
         }
@@ -508,8 +508,8 @@ final class Live {
     private var speaking = false
     private var muteUntil = Date.distantPast
 
-    let endSilence = 0.7
-    let maxTurn = 28.0
+    let endSilence = 0.85
+    let maxTurn = 16.0
 
     init(ears: Ears, voice: Voice, link: Link) {
         self.ears = ears; self.voice = voice; self.link = link
@@ -616,7 +616,8 @@ final class Live {
         }
         speakers?.feed(samples)
         levelPeak = max(levelPeak, rms)
-        let threshold = max(0.012, noise * 3.5)
+        // Noisy rooms: track the floor even while "voice" is detected so a loud room cannot pin us in a turn.
+        let threshold = min(max(0.005, noise * 3.0), 0.05)
         let isVoice = rms > threshold
         if !isVoice { noise = noise * 0.95 + rms * 0.05 }
 
@@ -671,10 +672,30 @@ final class Live {
                 try? await Task.sleep(nanoseconds: 20_000_000)
                 continue
             }
-            await voice.speak(next.text)
+            // Watchdog: a stuck voice must never leave the microphone muted. Give each line a generous
+            // budget, then cut it and carry on listening.
+            let budget = 6.0 + Double(next.text.split(separator: " ").count) * 0.9
+            let flag = DoneFlag()
+            let voiceRef = voice
+            Task { await voiceRef.speak(next.text); flag.set() }
+            let began = Date()
+            while !flag.isSet {
+                if Date().timeIntervalSince(began) > budget {
+                    log("VOICE STUCK after \(Int(budget))s on: \(next.text.prefix(60)). Cutting it and listening again.")
+                    voice.stop()
+                    break
+                }
+                try? await Task.sleep(nanoseconds: 20_000_000)
+            }
             link.send(["type": "spoken", "id": next.id, "cut": voice.isStopped])
         }
     }
+}
+
+final class DoneFlag: @unchecked Sendable {
+    private let lock = NSLock(); private var done = false
+    func set() { lock.lock(); done = true; lock.unlock() }
+    var isSet: Bool { lock.lock(); defer { lock.unlock() }; return done }
 }
 
 // MARK: - Commands
