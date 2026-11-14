@@ -1,0 +1,33 @@
+id: sunburn
+title: Sunburn
+short: the sunburn
+priority: 5
+when: "skin red, sore, or blistered from too much sun"
+triggers: [sunburn, sunburned, sunburnt, "sun burn", "sun burned"]
+facts:
+  - "Cool water or cool wet cloths, never ice."
+  - "Aloe or a plain moisturizer helps after cooling."
+  - "Never pop sunburn blisters."
+  - "Drink extra water."
+  - "Keep the burned skin covered from the sun until it heals."
+  - "Sunburn with confusion, fainting, or fever can be heat illness."
+start: flags
+nodes:
+  flags:
+    ask: "Any blisters over a large area, fever or chills, confusion, or feeling faint?"
+    yes: bad
+    no: cool
+    unsure: bad
+  bad:
+    do: "That is a severe sunburn, and it may be heat illness too. Get into shade, lie down, and sip water. This needs a doctor."
+    log: "Severe sunburn signs"
+    then: cool
+  cool:
+    do: "Get out of the sun now. Cool the skin with cool water or cool wet cloths for fifteen minutes. Not ice. Say done."
+    log: "Skin cooled"
+    next: drink
+  drink:
+    do: "Drink extra water. Put aloe or a plain moisturizer on the skin. Do not pop any blisters. Say done."
+    next: finish
+  finish:
+    end: "Keep it covered from the sun until it heals. Tell me if they get confused, faint, or very hot."

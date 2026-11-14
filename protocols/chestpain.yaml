@@ -1,0 +1,67 @@
+id: chestpain
+title: Chest pain
+short: the chest pain
+priority: 1
+when: "chest pain, pressure, squeezing or tightness in the chest, or a possible heart attack, in someone who is awake"
+triggers: [chest pain, chest pains, chest pressure, chest tightness, tight chest, heart attack, pain in my chest, pain in his chest, pain in her chest, chest hurts, chest is hurting]
+facts:
+  - "Stop all activity and sit down. Walking makes the heart work harder."
+  - "Chew the aspirin. Chewing works faster than swallowing it whole."
+  - "One regular aspirin, or two to four low dose ones."
+  - "No aspirin if they are allergic to it, have been told by a doctor not to take it, or cannot swallow."
+  - "Only their own prescribed heart medicine. Never someone else's."
+  - "Heart attack pain can be in the arm, jaw, back, or upper belly, and can feel like indigestion."
+  - "If they collapse and stop breathing, tell me and we start C P R."
+start: rest
+nodes:
+  rest:
+    do: "Stop all activity. Sit down and lean back, knees bent. Loosen tight clothing. Say done."
+    log: "Stopped activity, sitting"
+    cant: signs
+    next: signs
+  signs:
+    ask: "Is it pressure, squeezing, or tightness, or does it spread to the arm, jaw, or back, or come with sweating, nausea, or shortness of breath?"
+    yes: heart
+    no: wall
+    unsure: heart
+  wall:
+    ask: "Is the pain sharp, in one small spot, and only when they press on it, twist, or breathe deeply, after a strain or a hit?"
+    yes: wall_care
+    no: heart
+    unsure: heart
+  wall_care:
+    do: "That is less likely to be the heart. Rest, and avoid the movement that hurts. Say done."
+    log: "Sharp, movement-related chest pain. Rest advised"
+    next: wall_end
+  wall_end:
+    end: "If it turns into pressure, spreads, or comes with sweating or shortness of breath, tell me at once. See a doctor if it lasts."
+  heart:
+    do: "Treat this as a heart attack. Send someone for help or start satellite S O S now."
+    log: "Possible heart attack. Help sent for"
+    then: aspirin_ok
+  aspirin_ok:
+    ask: "Is there aspirin, and are they able to swallow, not allergic to it, and never told by a doctor to avoid it?"
+    yes: aspirin
+    no: own_med
+    unsure: own_med
+  aspirin:
+    do: "Have them chew one regular aspirin, or two to four low dose ones. Chew it, do not swallow it whole. Say done."
+    log: "Aspirin chewed"
+    cant: own_med
+    next: own_med
+  own_med:
+    ask: "Do they carry their own heart medicine for chest pain, like nitroglycerin?"
+    yes: own_med_take
+    no: wait
+    unsure: wait
+  own_med_take:
+    do: "Help them take it exactly as their label says. Only their own medicine. Say done."
+    log: "Own heart medicine taken"
+    cant: wait
+    next: wait
+  wait:
+    do: "Keep them sitting, resting, and calm. No walking and no food. If there is a defibrillator nearby, have it brought. Tell me at once if they collapse or stop breathing."
+    log: "Resting, being watched"
+    then: finish
+  finish:
+    end: "Chest pain steps complete. Stay with them. Say report for the handoff note."

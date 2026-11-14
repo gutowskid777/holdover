@@ -1,0 +1,63 @@
+id: marine
+title: Jellyfish or sea sting
+short: the sting
+priority: 4
+when: "stung or spiked in the sea by a jellyfish, a stingray, a sea urchin, or something in the water"
+triggers: [jellyfish, "jelly fish", stingray, "sting ray", "sea urchin", urchin, "man of war", "man o war"]
+facts:
+  - "Rinse a jellyfish sting with sea water, never fresh water."
+  - "Never rub a jellyfish sting."
+  - "Vinegar for thirty seconds helps with many jellyfish. If there is none, skip it."
+  - "Hot water for twenty minutes is the best pain relief for sea stings."
+  - "Test hot water on your own skin first. It must not burn."
+  - "Stingray wounds and deep spines need a doctor. They get infected."
+  - "Trouble breathing after a sting is an allergic emergency."
+start: react
+nodes:
+  react:
+    ask: "Any trouble breathing, swelling of the face or throat, or feeling faint?"
+    yes: "@allergic"
+    no: kind
+    unsure: "@allergic"
+  kind:
+    ask: "Was it a jellyfish, or something with a spine, like a stingray or a sea urchin?"
+    pick: "Was it a jellyfish, or something with a spine?"
+    unsure: rinse
+    choices:
+      jelly:
+        means: "a jellyfish or something with tentacles"
+        words: [jellyfish, jelly, tentacle, tentacles, "man of war"]
+        goto: rinse
+      spine:
+        means: "a stingray, a sea urchin, or a fish spine"
+        words: [stingray, ray, urchin, spine, spines, barb, spike, fish]
+        goto: spine
+  rinse:
+    do: "Get out of the water. Rinse the sting with sea water, not fresh water. Do not rub it. Say done."
+    log: "Rinsed with sea water"
+    next: vinegar
+  vinegar:
+    do: "If you have vinegar, pour it over the sting for thirty seconds. If you have none, skip it."
+    then: pick_off
+  pick_off:
+    do: "Pick off any tentacles with tweezers or a gloved hand. Not bare fingers. Say done."
+    log: "Tentacles removed"
+    next: hot
+  spine:
+    do: "Get out of the water. If a spine is deep, or in the chest, belly, or neck, leave it in and send for help."
+    then: spine_small
+  spine_small:
+    do: "Pull out small loose spines with tweezers. Leave any that are deep or that break off. Press on any bleeding. Say done."
+    log: "Loose spines removed"
+    next: hot
+  hot:
+    do: "Soak the sting in hot water for twenty minutes. As hot as they can stand without burning. Test it on your own skin first. I am timing it. Say done when it is soaking, or say you cannot."
+    timer: 1200
+    log: "Hot water soak"
+    cant: no_hot
+    next: finish
+  no_hot:
+    do: "Then hold a cold pack, wrapped in cloth, on it for the pain."
+    then: finish
+  finish:
+    end: "Watch for trouble breathing, spreading redness, or fever. Stingray wounds and deep spines need a doctor. Tell me if anything changes."

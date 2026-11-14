@@ -1,0 +1,43 @@
+id: blister
+title: Blister
+short: the blister
+priority: 5
+when: "a rubbing blister or hot spot on a foot or a hand from boots, walking, paddling, or tools (not from a burn)"
+triggers: [blister, blisters, "hot spot"]
+facts:
+  - "A small blister heals best left closed and padded."
+  - "Leave the loose skin on as a natural cover."
+  - "A ring of padding takes the pressure off the blister."
+  - "Clean the needle with alcohol or a flame before draining."
+  - "Change wet socks and stop at the first hot spot."
+  - "Spreading redness, pus, or red streaks mean infection."
+start: torn
+nodes:
+  torn:
+    ask: "Is the blister already torn open or leaking?"
+    yes: wash
+    no: small
+    unsure: wash
+  small:
+    ask: "Is it small enough that they can keep going?"
+    yes: pad
+    no: drain
+    unsure: pad
+  pad:
+    do: "Leave it closed. Cut a ring of padding, put the hole over the blister, and tape over it. Say done."
+    log: "Blister left closed and padded"
+    next: finish
+  drain:
+    do: "Wash your hands and the skin. Clean a needle with alcohol or a flame. Prick the edge of the blister, low down, and press the fluid out gently. Leave the skin on. Say done, or say you cannot."
+    log: "Blister drained"
+    cant: pad
+    next: dress
+  wash:
+    do: "Rinse it with clean water. Smooth the loose skin back over it if it is clean. Say done."
+    next: dress
+  dress:
+    do: "Cover it with a dressing that will not stick, pad around it, and tape it down smooth. Say done."
+    log: "Blister dressed"
+    next: finish
+  finish:
+    end: "Keep it clean and dry, and change wet socks. Spreading redness, pus, or red streaks mean infection and a doctor. Tell me if anything changes."

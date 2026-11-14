@@ -1,0 +1,58 @@
+id: stroke
+title: Stroke signs
+short: the stroke signs
+priority: 1
+when: "a possible stroke: one side of the face drooping, one arm or leg suddenly weak or numb, slurred or strange speech, sudden confusion or loss of vision"
+triggers: [stroke, face is drooping, face drooping, droopy face, slurring, slurred speech, cant lift his arm, cant lift her arm, one side is numb, one side is weak]
+facts:
+  - "Time matters. The sooner they reach a hospital, the more can be done."
+  - "Note the time they were last seen normal. Doctors will ask for it."
+  - "Give nothing to eat or drink. Swallowing may not be safe."
+  - "No aspirin. Some strokes are bleeding, and aspirin makes that worse."
+  - "Signs that come and then go away still count. Treat it as a stroke."
+  - "If they get drowsy or vomit, roll them onto their side."
+start: face
+nodes:
+  face:
+    ask: "Ask them to smile. Does one side of the face droop?"
+    yes: positive
+    no: arm
+    unsure: arm
+  arm:
+    ask: "Ask them to raise both arms. Does one arm drift down, or feel weak or numb?"
+    yes: positive
+    no: speech
+    unsure: speech
+  speech:
+    ask: "Ask them to repeat a simple sentence. Is the speech slurred, strange, or missing?"
+    yes: positive
+    no: other
+    unsure: positive
+  other:
+    ask: "Any sudden trouble seeing, sudden confusion, a sudden severe headache, or loss of balance?"
+    yes: positive
+    no: negative
+    unsure: positive
+  positive:
+    do: "Treat this as a stroke. Time matters. Send someone for help or start satellite S O S now."
+    log: "Stroke signs present. Help sent for"
+    then: time
+  time:
+    do: "Work out when they were last seen normal, and remember it. I have logged the time now. Say done."
+    log: "Stroke signs noted at this time"
+    next: care
+  care:
+    do: "Lay them down with the head and shoulders slightly raised. Nothing to eat or drink, and no aspirin. Say done."
+    log: "Resting, head raised, nothing by mouth"
+    next: watch
+  watch:
+    do: "Stay with them. If they vomit or get drowsy, roll them onto their side. Tell me at once if they stop responding."
+    then: finish
+  negative:
+    do: "I do not find the main stroke signs right now. If any of them appear, even briefly, treat it as a stroke."
+    log: "Stroke check: no signs found"
+    then: negative_end
+  negative_end:
+    end: "Keep watching them for the next hour. Tell me what else is wrong."
+  finish:
+    end: "Stroke steps complete. Say report for the handoff note. Give the medics the time they were last normal."

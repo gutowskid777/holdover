@@ -1,0 +1,51 @@
+id: impaled
+title: Object stuck in the body
+short: the stuck object
+priority: 2
+when: "something stabbed into the body and still in it: a knife, a stick, a branch, a tent stake, an arrow, a nail, or a piece of metal or glass"
+triggers: [impaled, impale, "sticking out of", "still in him", "still in her", "still in me", "went through his", "went through her", "went through my", "went right through"]
+facts:
+  - "Never pull out an object that is stuck in the body. It may be plugging the bleeding."
+  - "Press around the object, never on it."
+  - "Pack cloth around it so it cannot move."
+  - "A long object can be cut shorter only if that can be done without moving it."
+  - "Give nothing to eat or drink."
+  - "If it comes out by itself, press hard on the wound."
+start: leave
+nodes:
+  leave:
+    do: "Do not pull it out. It may be plugging the bleeding."
+    log: "Object left in place"
+    then: press
+  press:
+    do: "Press firmly on the skin around it, on both sides, with cloth. Do not press on the object. Say done when you are pressing."
+    log: "Pressure applied around the object"
+    next: steady
+  steady:
+    do: "Pack rolled cloth around the object to hold it still, and tape or tie that in place. If it is long, have someone hold it steady. Say done."
+    log: "Object padded and held still"
+    next: where
+  where:
+    ask: "Is it in the chest, the belly, the neck, or the head?"
+    yes: torso
+    no: limb
+    unsure: torso
+  torso:
+    do: "Keep them still. Half sitting if breathing is hard, otherwise lying down. Nothing to eat or drink. Send for help or start satellite S O S."
+    log: "Object in the body. Evacuation advised"
+    then: shock
+  limb:
+    do: "Keep that limb still. Send for help or start satellite S O S."
+    log: "Object in a limb. Evacuation advised"
+    then: shock
+  shock:
+    ask: "Are they pale, cold, sweaty, or faint?"
+    yes: shock_do
+    no: finish
+    unsure: shock_do
+  shock_do:
+    do: "Lay them flat if the object allows it, and keep them warm. Nothing to eat or drink. Say done."
+    log: "Signs of shock. Kept flat and warm"
+    next: finish
+  finish:
+    end: "Keep it still until help takes over. Say report for the handoff note, or tell me if anything changes."

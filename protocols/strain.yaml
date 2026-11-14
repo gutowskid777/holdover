@@ -1,0 +1,47 @@
+id: strain
+title: Pulled muscle or cramp
+short: the pulled muscle
+priority: 5
+when: "a pulled, strained, or torn muscle, or a sudden muscle cramp, from running, lifting, climbing, or paddling"
+triggers: ["pulled muscle", "pulled a muscle", "pulled my hamstring", "pulled my calf", "pulled my groin", "pulled my back", "pulled something", "muscle strain", "strained my", "tore a muscle", "charley horse", "leg cramp", "calf cramp", "muscle cramp"]
+facts:
+  - "Rest it, cool it, wrap it, and raise it for the first two days."
+  - "Cold goes on for twenty minutes at a time, wrapped in cloth."
+  - "A cramp eases with a slow stretch, a gentle rub, and water with a little salt."
+  - "A pop, a dent in the muscle, or no strength at all can mean a tear, and needs a doctor."
+  - "Gentle movement helps after the first two days."
+  - "Do not stretch hard into sharp pain."
+start: pop
+nodes:
+  pop:
+    ask: "Was there a pop or a snap, is there a dent or a lump in the muscle, or can they not use it at all?"
+    yes: tear
+    no: cramp_ask
+    unsure: tear
+  tear:
+    do: "That may be a torn muscle or tendon. Do not stretch it or test it. Keep weight off it. It needs a doctor."
+    log: "Possible muscle or tendon tear"
+    then: cold
+  cramp_ask:
+    ask: "Is it a cramp, a tight knot that came on suddenly?"
+    yes: cramp
+    no: pulled
+    unsure: pulled
+  cramp:
+    do: "Stretch the muscle slowly and hold it, and rub it gently. Sip water with a pinch of salt, or a sports drink. Say done."
+    log: "Cramp stretched. Fluids given"
+    next: finish
+  pulled:
+    do: "That sounds like a pulled muscle. Stop the activity that hurts it."
+    log: "Pulled muscle"
+    then: cold
+  cold:
+    do: "Put something cold on it, wrapped in cloth, for twenty minutes. I am timing it. Say done."
+    timer: 1200
+    next: wrap
+  wrap:
+    do: "Wrap it snugly, not tight, and raise it when you rest. Say done."
+    log: "Cold, wrapped, and raised"
+    next: finish
+  finish:
+    end: "Ease back into using it over a few days. See a doctor if it cannot take weight, goes numb, or swells a lot. Tell me if anything changes."

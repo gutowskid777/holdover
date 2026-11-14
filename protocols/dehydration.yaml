@@ -1,0 +1,48 @@
+id: dehydration
+title: Dehydration
+short: the dehydration
+priority: 3
+when: "not enough water: very thirsty, dry mouth, dark urine or none, weak and tired, after sweating or not drinking, with no vomiting as the main problem"
+triggers: [dehydrated, dehydration, havent had water, haven't had water, ran out of water, no water all day, dark urine, havent peed]
+facts:
+  - "Small sips often work better than big gulps."
+  - "Home rehydration drink: one liter of clean water, six level teaspoons of sugar, half a teaspoon of salt."
+  - "Pale urine means you have caught up."
+  - "No alcohol and no caffeine."
+  - "Confusion, fainting, or no urine for eight hours is severe."
+  - "Never force a drink into someone who is not fully awake."
+start: mind
+nodes:
+  mind:
+    ask: "Any confusion, extreme sleepiness, fainting, or no urine for eight hours or more?"
+    yes: severe
+    no: sip
+    unsure: severe
+  severe:
+    do: "That is severe dehydration. Send someone for help or start satellite S O S. If they are awake and can swallow, give small sips often."
+    log: "Severe dehydration. Help sent for"
+    then: finish
+  sip:
+    do: "Rest in the shade. Take small sips of water every few minutes, not big gulps. Say done."
+    log: "Resting, sipping water"
+    cant: no_water
+    next: salts
+  no_water:
+    do: "Then rest in the shade, stop sweating, and do not eat. Finding safe water is now the first job. Treat stream water before drinking if you can."
+    log: "No water available"
+    then: mild_end
+  salts:
+    ask: "Do you have a sports drink or rehydration salts?"
+    yes: salts_use
+    no: mix
+    unsure: mix
+  salts_use:
+    do: "Use it. Keep sipping until the urine is pale again."
+    then: mild_end
+  mix:
+    do: "If you have sugar and salt, mix one liter of clean water with six level teaspoons of sugar and half a teaspoon of salt, and sip that. If not, plain water is fine."
+    then: mild_end
+  mild_end:
+    end: "Keep sipping and resting. If confusion or fainting starts, tell me at once."
+  finish:
+    end: "Dehydration steps complete. Say report for the handoff note."

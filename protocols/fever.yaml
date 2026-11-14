@@ -1,0 +1,47 @@
+id: fever
+title: Fever
+short: the fever
+priority: 3
+when: "a fever, a high temperature, chills, or feeling hot and sick, not caused by sun or hard effort"
+triggers: [fever, feverish, high temperature]
+facts:
+  - "Rest, fluids, and light clothing are the first steps."
+  - "A fever medicine like acetaminophen or ibuprofen is fine if they normally take it. Follow the label."
+  - "No aspirin for anyone under eighteen."
+  - "No ice baths and no alcohol rubs."
+  - "A stiff neck, a rash that does not fade when pressed, or confusion with a fever is an emergency."
+  - "A fever over one hundred and three degrees, or one lasting more than three days, needs a doctor."
+start: flags
+nodes:
+  flags:
+    ask: "Any stiff neck, a rash that does not fade when pressed, confusion, trouble breathing, or a seizure?"
+    yes: evac
+    no: care
+    unsure: evac
+  evac:
+    do: "That needs a doctor urgently. Send someone for help or start satellite S O S."
+    log: "Fever with warning signs. Help sent for"
+    then: evac_care
+  evac_care:
+    do: "Keep them resting and lightly covered. Small sips of water if fully awake. Tell me at once if they stop responding."
+    then: finish
+  care:
+    do: "Rest. Take off extra layers. Drink plenty of fluids. Say done."
+    log: "Rest, fluids, light clothing"
+    next: medicine
+  medicine:
+    do: "A fever medicine like acetaminophen or ibuprofen is fine if they normally take it. Follow the label. No aspirin for anyone under eighteen."
+    then: long
+  long:
+    ask: "Has it lasted more than three days, or is it over one hundred and three degrees?"
+    yes: doctor
+    no: mild_end
+    unsure: doctor
+  doctor:
+    do: "Then plan to see a doctor. Keep up the fluids."
+    log: "Doctor visit advised"
+    then: mild_end
+  mild_end:
+    end: "Keep resting and drinking. If a stiff neck, a rash, or confusion starts, tell me at once."
+  finish:
+    end: "Fever steps complete. Say report for the handoff note."

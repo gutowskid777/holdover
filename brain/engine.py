@@ -130,6 +130,7 @@ class Session:
         self.pending = []      # ("start", pid) or ("resume", pid, node id): problems waiting their turn
         self.triage_text = ""
         self.idle_said = False
+        self.open_turns = []   # (who, text) while talking in open mode, outside any checked protocol
         self.known = {}        # (protocol id, node id) -> answer the caller already gave, before being asked
         self.skipped = 0
 
@@ -268,7 +269,9 @@ class Session:
                 self.misses = 0
                 self._log("caller", "Went back one step")
             return self._out([self.node[self.node["kind"]]])
-        if self.node and CAMERA.search(text) and self.node["kind"] != "look":
+        if CAMERA.search(text) and not (self.node and self.node["kind"] == "look"):
+            if self.proto is None:
+                self.open_turns.append(("caller", text))
             return self._out(["Hold it up to the camera and keep still."], capture="describe")
 
         # 1. No protocol yet, or the last one ended: work out what the emergency is.
@@ -284,7 +287,18 @@ class Session:
                 if self.misses == 1:
                     return self._out([ASK_WHAT])
                 return self._out([WHICH])
+            if pids[0] == "general" and hasattr(self.llm, "open"):
+                # Nothing checked covers this. Talk it through, clearly labelled, instead of refusing.
+                self.misses = 0
+                said = self.triage_text if not self.open_turns else text
+                ans = self.llm.open(said, self.open_turns)
+                self.open_turns += [("caller", said), ("dispatch", ans)]
+                self._log("open", f"{said} -> {ans}")
+                self.triage_text = ""
+                self.proto = self.node = None
+                return self._out(sentences(ans), open=True)
             self.misses, self.idle_said = 0, False
+            self.open_turns = []
             self._log("caller", self.triage_text)
             self.pending += [("start", p) for p in pids[1:]]
             self._enter("@" + pids[0], say, self.triage_text)
@@ -402,10 +416,22 @@ class Session:
             return self._out(["I can't make it out. Tell me instead. " + n.get("question", n["look"])])
         desc = self.llm.describe(image_b64)
         self._log("camera", desc)
+        if self.proto is None and hasattr(self.llm, "open"):
+            ans = self.llm.open(f"I showed you through the camera. You can see: {desc}", self.open_turns)
+            self.open_turns += [("caller", f"(camera) {desc}"), ("dispatch", ans)]
+            self._log("open", ans)
+            return self._out([f"I see: {desc}"] + sentences(ans), open=True)
         return self._out([f"I see: {desc}", n[n["kind"]] if n else "Tell me what is happening."])
 
     def _triage(self, text):
         """Protocol ids, most urgent first. Works with models that only offer triage()."""
+        hits = [pid for pid, p in self.protocols.items() if p.get("triggers") and keyword_hit(text, p["triggers"])]
+        if len(hits) == 1:                                   # one plain keyword match: no model needed
+            return hits
+        if len(hits) > 1 and hasattr(self.llm, "triage_all"):   # several: the model picks among just those
+            picked = self.llm.triage_all(text, {p: self.protocols[p] for p in hits})
+            if picked:
+                return picked
         if hasattr(self.llm, "triage_all"):
             return self.llm.triage_all(text, self.protocols)
         pid = self.llm.triage(text, self.protocols)

@@ -1,0 +1,72 @@
+id: poisoning
+title: Poisoning or overdose
+short: the poisoning
+priority: 2
+when: "swallowed, breathed in, or touched something poisonous: chemicals, pills, too much medicine or drugs, a wild plant, berries, or mushrooms"
+triggers: [poisoned, overdose, overdosed, swallowed bleach, drank bleach, ate a mushroom, wild mushroom, wild mushrooms, wild berries, took too many pills, too many pills]
+facts:
+  - "Never make them vomit. It can burn the throat again or get into the lungs."
+  - "Nothing to eat or drink unless a poison center tells you to."
+  - "Keep the container, the plant, or the pills to show the medics."
+  - "With any phone signal, Poison Control in the United States is one eight hundred, two two two, one two two two."
+  - "For fumes, fresh air comes first. Do not become a second victim."
+  - "Rinse skin or eyes with running water for fifteen to twenty minutes."
+  - "Naloxone spray is safe to give even if you are not sure it was an opioid."
+start: awake
+nodes:
+  awake:
+    ask: "Are they awake and breathing normally?"
+    yes: route
+    no: narcan_have
+    unsure: narcan_have
+  narcan_have:
+    ask: "Could it be an opioid or strong painkiller, and is there naloxone spray, like Narcan?"
+    yes: narcan
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  narcan:
+    do: "Spray the naloxone into one nostril now. Say done."
+    log: "Naloxone given"
+    then: "@unresponsive"
+  route:
+    ask: "How did it get in?"
+    pick: "Was it swallowed, breathed in, or on the skin or in the eyes?"
+    choices:
+      swallowed:
+        means: "swallowed, eaten, or drunk, including pills, plants, or mushrooms"
+        words: [swallowed, ate, eaten, drank, drunk, pills, mushroom, berries, plant]
+        goto: swallowed
+      breathed:
+        means: "breathed in, like gas, smoke, or fumes"
+        words: [breathed, inhaled, fumes, gas, smoke, vapor]
+        goto: breathed
+      skin:
+        means: "on the skin or in the eyes"
+        words: [skin, eye, eyes, splashed, spilled]
+        goto: skin
+    unsure: swallowed
+  swallowed:
+    do: "Do not make them vomit. Nothing to eat or drink. Have them spit out anything left in the mouth. Say done."
+    log: "Swallowed poison. No vomiting, nothing by mouth"
+    next: keep
+  keep:
+    do: "Keep the container, the plant, or the pills to show the medics. Say done."
+    next: help
+  breathed:
+    do: "Get them into fresh air now. Do not stay in the fumes yourself. Say done."
+    log: "Moved to fresh air"
+    next: help
+  skin:
+    do: "Take off clothing it touched. Brush off dry powder, then rinse the skin or the eye with running water for fifteen to twenty minutes. I am timing it. Say done when the water is running."
+    timer: 900
+    log: "Rinsing skin or eye with water"
+    next: help
+  help:
+    do: "Send someone for help or start satellite S O S. With any phone signal, call Poison Control."
+    log: "Help sent for"
+    then: watch
+  watch:
+    do: "Watch them closely. If they get drowsy, roll them onto their side. Tell me at once if they stop responding or have a seizure."
+    then: finish
+  finish:
+    end: "Poisoning steps complete. Say report for the handoff note. Tell the medics what it was, how much, and when."

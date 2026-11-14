@@ -1,0 +1,62 @@
+id: breathing
+title: Trouble breathing
+short: the breathing trouble
+priority: 1
+when: "an asthma attack, wheezing, or someone awake who is short of breath or struggling to breathe, with nothing stuck in the throat"
+triggers: [asthma, asthma attack, wheezing, short of breath, shortness of breath, cant catch my breath, cant catch his breath, cant catch her breath, trouble breathing, hard to breathe, struggling to breathe]
+facts:
+  - "Sitting upright and leaning forward makes breathing easier. Do not lay them flat."
+  - "Only their own reliever inhaler. It is usually blue."
+  - "One puff at a time, with a slow deep breath for each puff."
+  - "A spacer makes the inhaler work better if they have one."
+  - "Breathing out slowly through pursed lips helps."
+  - "Get away from smoke, dust, cold air, or whatever set it off."
+  - "Blue lips, or being too breathless to speak, is an emergency."
+start: upright
+nodes:
+  upright:
+    do: "Sit them upright, leaning slightly forward, hands on the knees. Loosen tight clothing. Say done."
+    log: "Sat upright"
+    cant: cause
+    next: cause
+  cause:
+    ask: "Did this start right after a sting, a food, or a medicine, with hives or a swollen face or throat?"
+    yes: "@allergic"
+    no: severe
+    unsure: severe
+  severe:
+    ask: "Can they speak a full sentence without stopping for breath?"
+    yes: inhaler_have
+    no: urgent
+    unsure: urgent
+  urgent:
+    do: "This is severe. Send someone for help or start satellite S O S now."
+    log: "Severe breathing trouble. Help sent for"
+    then: inhaler_have
+  inhaler_have:
+    ask: "Do they have their own reliever inhaler?"
+    yes: inhaler
+    no: calm
+    unsure: calm
+  inhaler:
+    do: "Help them use their own inhaler. One puff, then a slow deep breath in. One puff every minute, up to ten puffs. Say done."
+    log: "Own reliever inhaler used"
+    cant: calm
+    next: easier
+  calm:
+    do: "Keep them upright. Breathe in slowly through the nose and out slowly through pursed lips. Move away from smoke, dust, or cold air. Say done."
+    log: "Upright, slow pursed-lip breathing"
+    next: easier
+  easier:
+    ask: "Is the breathing getting easier?"
+    yes: mild_end
+    no: evac
+    unsure: evac
+  evac:
+    do: "They need help now. Send someone or start satellite S O S if you have not. If they have an inhaler, repeat the puffs after a few minutes. Tell me at once if they stop responding."
+    log: "Not improving. Evacuation advised"
+    then: finish
+  mild_end:
+    end: "Good. Keep them resting upright. If it comes back or the inhaler stops helping, tell me at once."
+  finish:
+    end: "Breathing steps complete. Stay with them. Say report for the handoff note."

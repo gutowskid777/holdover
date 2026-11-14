@@ -1,0 +1,27 @@
+id: seasick
+title: Motion sickness
+short: the motion sickness
+priority: 5
+when: "seasick, carsick, or motion sickness on a boat or a winding road"
+triggers: [seasick, sea sick, carsick, car sick, motion sickness, motion sick]
+facts:
+  - "Looking at the horizon lets the eyes and the inner ear agree."
+  - "Fresh air and facing forward help. Reading and going below deck make it worse."
+  - "Small sips and plain crackers settle the stomach."
+  - "It ends soon after the motion stops."
+start: horizon
+nodes:
+  horizon:
+    do: "Look at the horizon, or a fixed point far away. Get fresh air and face forward. Say done."
+    log: "Eyes on the horizon, fresh air"
+    next: sip
+  sip:
+    do: "Take small sips of water and eat a few plain crackers. No reading and no strong smells. Say done."
+    next: dry
+  dry:
+    ask: "Is there vomiting that will not stop, or no urine, or dizziness when standing?"
+    yes: "@dehydration"
+    no: mild_end
+    unsure: "@dehydration"
+  mild_end:
+    end: "It will ease soon after the motion stops. Tell me if anything changes."

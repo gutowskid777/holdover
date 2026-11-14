@@ -241,7 +241,11 @@ final class Voice {
     func render(_ text: String) async throws -> (samples: [Float], rate: Int, firstAudio: Double, total: Double) {
         guard let tts else { throw NSError(domain: "speechd", code: 1, userInfo: [NSLocalizedDescriptionKey: "Argmax TTS is not loaded"]) }
         let t = Date()
-        let opts = GenerationOptions(concurrentWorkerCount: 1)
+        // Low randomness: the default (0.9) made the tone wander and added stray noises between lines.
+        var opts = GenerationOptions(concurrentWorkerCount: 1)
+        opts.temperature = Float(args.opts["--temp"] ?? "") ?? 0.3
+        opts.topK = Int(args.opts["--topk"] ?? "") ?? 20
+        opts.repetitionPenalty = 1.1
         let r = try await tts.generate(text: text, speaker: speaker, language: .english, options: opts)
         return (r.audio, r.sampleRate, r.timings.timeToFirstBuffer, Date().timeIntervalSince(t))
     }
@@ -746,7 +750,7 @@ func runPrerender() async throws {
             let mono16 = resample(r.samples, from: r.rate, to: 16000)
             let heard = await ears.transcribe(mono16)
             let seconds = Double(r.samples.count) / Double(r.rate)
-            let tooLong = seconds > Double(line.count) * 0.13 + 2.0   // drawn-out or spelled-out speech
+            let tooLong = seconds > Double(line.count) * 0.11 + 0.9   // drawn-out or spelled-out speech
             let score = overlap(reference: line, heard: heard) - (tooLong ? 0.3 : 0)
             if best == nil || score > best!.score { best = (score, r.samples, r.rate) }
             if score >= 0.9 { break }

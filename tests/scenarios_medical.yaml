@@ -1,0 +1,109 @@
+# Medical condition calls. Same keys as scenarios.yaml (see the top of scenarios.py).
+# scenarios.py reads scenarios.yaml only: it needs a file option, or these appended, to run them.
+
+- name: medical / heart attack with aspirin
+  lines: ["my dad has really bad pressure in his chest and its going down his left arm hes sweating", "okay hes sitting", "yeah we have aspirin and hes not allergic", "done he chewed it", "no he doesnt have any"]
+  protocols: [chestpain]
+  visit: [heart, aspirin]
+  never: [wall_care]
+  final: finish
+
+- name: medical / sharp chest pain after a strain is not treated as heart
+  lines: ["my chest hurts", "done", "no its not pressure just a sharp spot", "yeah only when i twist or press on it i pulled something paddling", "done"]
+  protocols: [chestpain]
+  visit: [wall, wall_care]
+  never: [aspirin, heart]
+  final: wall_end
+
+- name: medical / stroke found on the face check
+  lines: ["my mom is talking funny and her face looks weird", "yeah the left side is drooping", "done", "done"]
+  protocols: [stroke]
+  visit: [positive, time, care]
+  never: [negative]
+  final: finish
+
+- name: medical / seizure that stops
+  lines: ["my friend is having a seizure hes shaking all over", "yes hes shaking right now", "okay done", "yeah it stopped", "yes hes breathing", "done", "no hes epileptic it was short"]
+  protocols: [seizure]
+  visit: [protect, side, rest]
+  never: [evac]
+  final: finish
+
+- name: medical / asthma with own inhaler gets better
+  lines: ["shes having an asthma attack shes wheezing really bad", "done", "no nothing like that", "yeah she can talk", "yes she has her inhaler", "done", "yeah its getting easier"]
+  protocols: [breathing]
+  visit: [inhaler]
+  never: [urgent, evac]
+  final: mild_end
+
+- name: medical / low blood sugar fixed with juice
+  lines: ["my buddy is diabetic and hes shaky and sweaty and not making sense", "yeah hes awake he can swallow", "yes very shaky", "okay he drank the juice"]
+  protocols: [diabetic]
+  visit: [sugar, wait]
+  never: [nothing]
+
+- name: medical / swallowed wild mushrooms
+  lines: ["my kid ate a wild mushroom", "yes shes awake and breathing fine", "she ate it", "done", "done"]
+  protocols: [poisoning]
+  visit: [swallowed, keep, help]
+  never: [narcan, skin, breathed]
+  final: finish
+
+- name: medical / mild altitude headache stays mild
+  lines: ["we are at twelve thousand feet and i think i have altitude sickness headache and nausea", "no none of those", "done", "done", "yeah a bit better"]
+  protocols: [altitude]
+  visit: [stop, care]
+  never: [descend]
+  final: mild_end
+
+- name: medical / severe altitude sickness must descend
+  lines: ["altitude sickness hes stumbling around like hes drunk and confused"]
+  protocols: [altitude]
+  visit: [descend]
+
+- name: medical / panic attack coached breathing
+  lines: ["im having a panic attack i cant slow my breathing my hands are tingling", "no none of that", "done", "done", "yeah its easing"]
+  protocols: [panic]
+  visit: [breathe, ground]
+  never: [which]
+  final: mild_end
+
+- name: medical / possible appendix
+  lines: ["my stomach hurts really bad", "no", "yeah it moved to the lower right and it kills when i cough"]
+  protocols: [belly]
+  visit: [appendix, position]
+  never: [mild]
+  final: finish
+
+- name: medical / stove in the tent
+  lines: ["we had the stove in the tent and now we all have headaches and feel sick carbon monoxide maybe", "okay were outside", "yes everyone is awake", "yeah we all have headaches"]
+  protocols: [monoxide]
+  visit: [out, evac]
+  final: finish
+
+- name: medical / infected cut with red streaks
+  lines: ["the cut on my leg from three days ago is infected theres pus", "yeah theres a red line going up my leg and i have chills", "done", "done"]
+  protocols: [infection]
+  visit: [evac, soak, cover]
+  final: mild_end
+
+- name: medical / thrown out back while lifting
+  lines: ["i threw out my back lifting the canoe", "no i didnt fall and my legs feel fine", "no", "done"]
+  protocols: [back]
+  visit: [care, cold]
+  never: [spine]
+  final: mild_end
+
+- name: medical / food poisoning mild
+  lines: ["i think i have food poisoning ive got diarrhea", "no none of those", "done", "yeah its staying down"]
+  protocols: [stomach]
+  visit: [rest, bland]
+  never: [evac]
+  final: mild_end
+
+- name: medical / feeling faint from heat and hunger
+  lines: ["i feel faint like im about to pass out", "okay im lying down", "no none of those", "probably i havent eaten all day", "done"]
+  protocols: [dizzy]
+  visit: [down, fix]
+  never: [urgent]
+  final: mild_end

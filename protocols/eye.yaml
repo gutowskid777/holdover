@@ -1,0 +1,102 @@
+id: eye
+title: Eye injury
+short: the eye
+priority: 3
+when: "something in the eye, a chemical or liquid splashed in the eye, or a poke, a scratch, or a blow to the eye"
+triggers: ["in my eye", "in his eye", "in her eye", "in the eye", "in my eyes", "eye injury", "scratched my eye", "poked my eye"]
+facts:
+  - "Never rub an injured eye."
+  - "A chemical in the eye is flushed with clean water for at least fifteen minutes."
+  - "Never pull out something that is stuck in the eye."
+  - "A scratched eye can feel like something is still in it."
+  - "Covering both eyes keeps the hurt eye from moving."
+  - "Take contact lenses out if a chemical got in the eye."
+  - "Any change in vision after an eye injury needs a doctor today."
+start: kind
+entries:
+  - {words: [chemical, bleach, fuel, gasoline, cleaner, acid, "bug spray", repellent, sunscreen, splashed], goto: flush}
+  - {words: [dust, sand, dirt, eyelash, speck, grit, sawdust], goto: speck}
+  - {words: [punched, punch, elbowed, poked, scratched], goto: blow}
+nodes:
+  kind:
+    ask: "What happened to the eye?"
+    pick: "Was it a chemical splash, a speck of dust or sand, something stuck in the eye, or a hit or a poke?"
+    unsure: stuck
+    choices:
+      chemical:
+        means: "a chemical or a liquid splashed in it"
+        words: [chemical, bleach, fuel, gas, gasoline, cleaner, spray, sunscreen, splashed, acid, soap, repellent]
+        goto: flush
+      speck:
+        means: "dust, sand, an eyelash, an insect, or a small loose speck"
+        words: [dust, sand, dirt, eyelash, lash, speck, grit, bug, ash, sawdust]
+        goto: speck
+      stuck:
+        means: "something stuck in the eye or sticking out of it"
+        words: [stuck, embedded, sticking, hook, glass, metal, splinter, shard]
+        goto: stuck
+      blow:
+        means: "a hit, a poke, or a scratch"
+        words: [hit, punch, punched, poked, poke, elbow, ball, branch, scratched, scratch, fist]
+        goto: blow
+  flush:
+    do: "Flush the eye with clean water right now. Hold the eyelid open and pour gently from the nose side outward for fifteen minutes. I am timing it. Say done when the water is running."
+    timer: 900
+    log: "Chemical in the eye. Flushing with water"
+    next: lens
+  lens:
+    do: "If they wear a contact lens, take it out while you flush. Do not rub the eye."
+    then: chem_help
+  chem_help:
+    do: "A chemical in the eye needs a doctor today, even if it feels better. Keep flushing if it still burns."
+    log: "Doctor today advised"
+    then: finish
+  speck:
+    do: "Do not rub it. Blink several times, then rinse the eye with clean water. Say done."
+    next: speck_out
+  speck_out:
+    ask: "Is it out, and does the eye feel better?"
+    yes: speck_end
+    no: lid
+    unsure: lid
+  lid:
+    do: "Pull the upper eyelid down over the lower lid and let go. Then rinse again. Say done."
+    next: lid_out
+  lid_out:
+    ask: "Did that clear it?"
+    yes: speck_end
+    no: leave
+    unsure: leave
+  leave:
+    do: "Leave it alone now. Cover the eye loosely and have a doctor look at it. A scratch can feel like something is still there."
+    log: "Speck not cleared, or a scratch. Eye covered"
+    then: finish
+  stuck:
+    do: "Do not pull it out. Do not press on the eye. Do not rinse it."
+    log: "Object stuck in the eye, left in place"
+    then: shield
+  shield:
+    do: "Cover the eye with a cup taped in place, so nothing touches it. Cover the other eye too, so both eyes stay still. Say done."
+    log: "Eye shielded"
+    next: stuck_help
+  stuck_help:
+    do: "This needs a hospital. Send for help or start satellite S O S. Keep them sitting up."
+    log: "Evacuation advised"
+    then: finish
+  blow:
+    ask: "Is there any change in vision, blood inside the eye, an odd shaped pupil, or severe pain?"
+    yes: blow_bad
+    no: blow_cold
+    unsure: blow_bad
+  blow_bad:
+    do: "That can be a serious eye injury. Do not press on the eye and do not rub it."
+    log: "Serious eye injury signs"
+    then: shield
+  blow_cold:
+    do: "Hold something cold, wrapped in cloth, gently around the eye for fifteen minutes. No pressure on the eyeball. Say done."
+    log: "Cold applied around the eye"
+    next: finish
+  speck_end:
+    end: "Good. If it turns red, painful, or blurry later, have a doctor look. Tell me if anything changes."
+  finish:
+    end: "Any change in vision, growing pain, or a red eye that does not settle needs a doctor today. Say report for the handoff note."

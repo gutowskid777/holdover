@@ -1,0 +1,99 @@
+# Injury and outdoor trees added 11-14 (bruise, head, eye, tooth, splinter, blister, tick, sunburn,
+# frostbite, marine, drowning, strain, amputation, impaled, rash, ribs). Same format as scenarios.yaml.
+# scenarios.py reads scenarios.yaml only: point it at this file to run these.
+
+- name: bruise / boxing bruise on the forearm is ordinary
+  lines: ["i have a bruise", "its on my forearm", "yeah from boxing", "no", "its a little puffy", "no its the same size", "no its just sore", "no it feels normal", "yeah i can move it fine", "done", "done"]
+  protocols: [bruise]
+  visit: [where, thinners, see, growing, tight, beyond, use, ordinary, cold]
+  never: [trunk_bad, pressure, squeezed, press]
+  final: finish
+
+- name: bruise / belly bruise with dizziness is treated as bleeding inside
+  lines: ["i fell on a rock and theres a big bruise on my belly", "yeah im dizzy and it hurts more and more"]
+  protocols: [bruise]
+  visit: [trunk_check, trunk_bad]
+  never: [ordinary, cold]
+  final: serious_end
+
+- name: bruise / black eye with no warning signs
+  lines: ["i have a black eye from boxing", "no nothing like that", "yeah a punch", "no", "its swollen a bit", "no", "no", "no", "yes", "done", "done"]
+  protocols: [bruise]
+  visit: [head_check, see, ordinary]
+  never: [trunk_bad, pressure]
+  final: finish
+
+- name: bruise / rock hard thigh with extreme pain goes to hospital today
+  lines: ["i got kicked in the thigh and the bruise is huge", "yeah a kick", "no", "its really tight and shiny", "yes its rock hard and the pain is unbearable"]
+  protocols: [bruise]
+  visit: [tight, pressure]
+  never: [ordinary, wrap]
+  final: serious_end
+
+- name: head / simple bump
+  lines: ["i bumped my head on a branch", "yes", "no", "no", "no", "no im fine", "done"]
+  protocols: [head]
+  visit: [neck, flags, bump, cold]
+  never: [serious, spine, concussion]
+  final: finish
+
+- name: head / knocked out and vomiting is serious
+  lines: ["he hit his head on a rock", "yeah hes awake", "no", "yes he was knocked out for a minute and he keeps vomiting"]
+  protocols: [head]
+  visit: [serious]
+  never: [bump, concussion]
+  final: serious_end
+
+- name: eye / chemical splash gets flushed
+  lines: ["i got bug spray in my eye", "done"]
+  protocols: [eye]
+  visit: [flush, chem_help]
+  never: [stuck, shield]
+  final: finish
+
+- name: tooth / adult tooth knocked out goes back in
+  lines: ["my tooth got knocked out", "yes its an adult tooth", "done", "done"]
+  protocols: [tooth]
+  visit: [find, back_in, dentist]
+  never: [baby, chip]
+  final: finish
+
+- name: tick / attached tick pulled with tweezers
+  lines: ["i found a tick on my leg", "yeah its stuck in", "done", "done"]
+  protocols: [tick]
+  visit: [pull, clean, note]
+  never: [brush]
+  final: finish
+
+- name: frostbite / cannot keep it warm so do not thaw
+  lines: ["my toes have frostbite theyre white and hard", "no hes fine otherwise", "done", "no we still have to hike out in the snow"]
+  protocols: [frostbite]
+  visit: [shelter, refreeze, no_thaw]
+  never: [thaw, nip]
+  final: evac_end
+
+- name: drowning / pulled out and not breathing goes to cpr
+  lines: ["we pulled him out of the lake", "no hes not breathing"]
+  protocols: [drowning, unresponsive]
+  never: [cough, watch]
+
+- name: amputation / fingertip cut off, bleeding controlled, part saved
+  lines: ["i chopped off my fingertip with the hatchet", "okay im pressing", "yeah its slowing", "yes i have it", "done", "done", "no hes okay"]
+  protocols: [amputation]
+  visit: [press, part, bag, ice, help]
+  never: [tourniquet]
+  final: finish
+
+- name: impaled / stick in the thigh is left in
+  lines: ["theres a stick sticking out of his thigh", "okay im pressing around it", "done", "no its his leg", "no"]
+  protocols: [impaled]
+  visit: [leave, press, steady, limb]
+  never: [torso]
+  final: finish
+
+- name: marine / jellyfish sting with no reaction
+  lines: ["i got stung by a jellyfish on my leg", "no breathing is fine", "done", "done", "done"]
+  protocols: [marine]
+  visit: [rinse, pick_off, hot]
+  never: [spine]
+  final: finish

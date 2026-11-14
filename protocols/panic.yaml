@@ -1,0 +1,55 @@
+id: panic
+title: Panic attack
+short: the panic attack
+priority: 4
+when: "a panic or anxiety attack: sudden fear, fast breathing or hyperventilating, tingling hands or lips, racing heart, with no injury"
+triggers: [panic attack, panicking, anxiety attack, hyperventilating, hyperventilate, freaking out]
+facts:
+  - "A panic attack feels terrible but it passes, usually within twenty to thirty minutes."
+  - "Slow breathing out is what calms the body."
+  - "Tingling fingers and lips come from breathing too fast. It goes away as the breathing slows."
+  - "Do not breathe into a paper bag."
+  - "Stay with them and speak slowly. Do not tell them to calm down."
+start: flags
+nodes:
+  flags:
+    ask: "Any pressure in the chest, a swollen face or throat, blue lips, or did it start after a sting, a food, or an injury?"
+    yes: which
+    no: breathe
+    unsure: which
+  which:
+    ask: "Which fits best?"
+    pick: "Which is it: pressure in the chest, a sting or swelling, or just not getting enough air?"
+    choices:
+      chest:
+        means: "pressure or pain in the chest"
+        words: [chest, pressure, heart]
+        goto: "@chestpain"
+      allergy:
+        means: "a sting, a food, or swelling of the face or throat"
+        words: [sting, stung, food, swelling, swollen, hives]
+        goto: "@allergic"
+      air:
+        means: "cannot get enough air, or blue lips"
+        words: [air, breath, breathe, blue]
+        goto: "@breathing"
+    unsure: "@breathing"
+  breathe:
+    do: "I am here. Breathe with me. In through the nose for four. Hold for four. Out slowly through the mouth for six. Do that five times, then say done."
+    log: "Slow breathing coached"
+    next: ground
+  ground:
+    do: "Now name five things you can see and four things you can touch. Say done."
+    next: easing
+  easing:
+    ask: "Is it easing?"
+    yes: mild_end
+    no: again
+    unsure: again
+  again:
+    do: "Keep the slow breathing going. Long, slow breaths out. It usually passes within twenty to thirty minutes."
+    then: again_end
+  again_end:
+    end: "I am still here. If pressure in the chest or fainting starts, tell me at once."
+  mild_end:
+    end: "Good. Rest for a while and sip some water. Tell me if anything changes."

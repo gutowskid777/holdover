@@ -1,0 +1,44 @@
+id: headache
+title: Headache
+short: the headache
+priority: 3
+when: "a headache or migraine on its own, as the only complaint. Not with a stove or heater in a closed space, not high in the mountains, not after a blow to the head"
+triggers: [migraine]
+facts:
+  - "Most headaches outdoors come from too little water, sun, hunger, or altitude."
+  - "The worst headache of your life, or one that hits in seconds, is an emergency."
+  - "A headache with a stiff neck and fever, confusion, weakness, or trouble speaking is an emergency."
+  - "Water, shade, rest, and a cool cloth are the first steps."
+  - "A plain painkiller like acetaminophen or ibuprofen is fine if they normally take it."
+start: sudden
+nodes:
+  sudden:
+    ask: "Is it the worst headache of their life, did it hit within seconds, or did it follow a blow to the head?"
+    yes: evac
+    no: signs
+    unsure: evac
+  signs:
+    ask: "Any stiff neck with fever, confusion, weakness, trouble speaking or seeing, or repeated vomiting?"
+    yes: evac
+    no: high
+    unsure: evac
+  evac:
+    do: "That needs a doctor urgently. Send someone for help or start satellite S O S. Keep them resting with the head raised, and give nothing to eat."
+    log: "Headache with warning signs. Help sent for"
+    then: finish
+  high:
+    ask: "Are you high in the mountains, above about eight thousand feet?"
+    yes: "@altitude"
+    no: care
+    unsure: care
+  care:
+    do: "Drink a few cups of water. Rest somewhere shaded and quiet, with a cool cloth on the forehead. Say done."
+    log: "Water, shade, rest"
+    next: medicine
+  medicine:
+    do: "A plain painkiller like acetaminophen or ibuprofen is fine if they normally take it. Follow the label."
+    then: mild_end
+  mild_end:
+    end: "If it suddenly gets worse, or confusion, weakness, or vomiting starts, tell me at once."
+  finish:
+    end: "Headache steps complete. Say report for the handoff note."

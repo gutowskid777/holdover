@@ -1,0 +1,70 @@
+id: frostbite
+title: Frostbite
+short: the frostbite
+priority: 3
+when: "fingers, toes, a nose, ears, or cheeks that are numb, white, waxy, hard, or frozen from the cold"
+triggers: [frostbite, frostbitten, frostnip, "frost bite", "frost bitten"]
+facts:
+  - "Never rub frostbitten skin, and never rub it with snow."
+  - "Never warm it at a fire, a stove, or with a heat pad. Numb skin burns without feeling it."
+  - "Do not thaw it if it could freeze again. Thawing and freezing again does far more damage."
+  - "Warm it in water that feels warm, not hot, to an unhurt hand."
+  - "Thawing hurts. That is expected."
+  - "Never pop frostbite blisters."
+  - "Take off rings before the fingers swell."
+start: core
+nodes:
+  core:
+    ask: "Are they also shivering hard, slurring words, clumsy, or confused?"
+    yes: "@hypothermia"
+    no: shelter
+    unsure: "@hypothermia"
+  shelter:
+    do: "Get out of the cold and the wind. Take off wet gloves, wet socks, and any rings. Say done."
+    log: "Out of the cold. Wet things and rings removed"
+    next: refreeze
+  refreeze:
+    ask: "Can you keep that part warm from now on, with no chance it freezes again?"
+    yes: see
+    no: no_thaw
+    unsure: no_thaw
+  no_thaw:
+    do: "Then do not thaw it yet. Thawing and freezing again does far more damage. Pad it, keep it dry, and get out."
+    log: "Not thawed, risk of refreezing. Evacuation advised"
+    then: evac_end
+  see:
+    look: "Show me the skin. Hold it up to the camera."
+    question: "How does the cold skin look and feel?"
+    pick: "Is it red and soft, or white and hard?"
+    unsure: thaw
+    choices:
+      nip:
+        means: "red or pale, but still soft"
+        words: [red, pink, soft, tingling, tingly]
+        goto: nip
+      frozen:
+        means: "white, gray, waxy, or hard"
+        words: [white, gray, grey, waxy, hard, frozen, numb, wooden, blue]
+        goto: thaw
+  nip:
+    do: "That is the mild stage. Warm it against warm skin, like in an armpit. Do not rub it. Say done."
+    log: "Mild stage. Warmed against skin"
+    next: finish
+  thaw:
+    do: "Warm it in water that feels warm, not hot, to an unhurt hand. Keep it in for thirty minutes and keep the water warm. I am timing it. It will hurt as it thaws. Say done when it is in the water, or say you cannot."
+    timer: 1800
+    log: "Rewarming in warm water"
+    cant: skin_warm
+    next: after
+  skin_warm:
+    do: "Then warm it against warm skin, in an armpit or on a belly. Never use a fire, a stove, or a heat pad. Say done."
+    log: "Rewarming against skin"
+    next: after
+  after:
+    do: "Do not rub it and do not pop blisters. Put dry cloth between the fingers or toes, wrap it loosely, and raise it. Say done."
+    log: "Wrapped loosely and raised"
+    next: evac_end
+  evac_end:
+    end: "Frostbite needs a doctor. Do not let it freeze again. Say report for the handoff note, or tell me if anything changes."
+  finish:
+    end: "Keep it warm and dry. If it stays numb, turns white, or blisters, treat it as frostbite. Tell me if anything changes."

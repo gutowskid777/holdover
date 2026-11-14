@@ -1,0 +1,44 @@
+id: belly
+title: Belly pain
+short: the belly pain
+priority: 3
+when: "stomach ache or pain in the belly or abdomen, including possible appendicitis, without vomiting or diarrhea as the main problem"
+triggers: [belly pain, stomach ache, stomachache, stomach pain, stomach hurts, belly hurts, abdominal pain, appendix, appendicitis, pain in my stomach, pain in my belly]
+facts:
+  - "A belly that is hard like a board, or pain that gets worse with every movement, needs a doctor."
+  - "Pain that starts near the belly button and moves to the lower right can be the appendix."
+  - "Nothing to eat or drink if it might need surgery."
+  - "No laxatives and no heat pad on a belly that might be the appendix."
+  - "Lying with the knees bent usually hurts least."
+  - "Belly pain in someone who could be pregnant needs a doctor."
+start: flags
+nodes:
+  flags:
+    ask: "Is the belly hard like a board, or is there vomiting blood, black or bloody stool, pain after a hard hit, or could they be pregnant?"
+    yes: evac
+    no: pattern
+    unsure: evac
+  pattern:
+    ask: "Has the pain moved to the lower right, or does it hurt much more when they move, cough, or go over a bump?"
+    yes: appendix
+    no: mild
+    unsure: appendix
+  appendix:
+    do: "That pattern needs a doctor soon. Plan to get out today. No food, no drink, no laxatives, and no heat pad."
+    log: "Possible surgical belly. Evacuation advised"
+    then: position
+  evac:
+    do: "That needs a doctor urgently. Send someone for help or start satellite S O S."
+    log: "Belly pain with warning signs. Help sent for"
+    then: position
+  position:
+    do: "Let them lie in whatever position hurts least, knees bent. Nothing to eat or drink. Tell me at once if they turn pale, sweaty, or faint."
+    then: finish
+  mild:
+    do: "Rest in a comfortable position. Sip water. Skip food for a few hours. Say done."
+    log: "Mild belly pain. Rest and sips"
+    next: mild_end
+  mild_end:
+    end: "If it gets worse, lasts more than a few hours, comes with fever, or settles in the lower right, they need a doctor. Tell me if anything changes."
+  finish:
+    end: "Belly pain steps complete. Say report for the handoff note."

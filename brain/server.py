@@ -68,6 +68,7 @@ class Hub:
         self.speak_id = 0
         self.last_node = None
         self.started = False
+        self.muted = self.paused = False
         self.turns = self.model_turns = 0
         self.clock = {}          # seconds from call start: arrest recognized, first compression
         self.voices = set()
@@ -127,7 +128,7 @@ class Hub:
             await self.emit(self.session.start())
 
     async def hear(self, text, speaker=None):
-        if not self.started or NOISE.match(text or ""):
+        if not self.started or NOISE.match(text or "") or self.paused:
             return
         await self.ui({"type": "heard", "text": text, "speaker": speaker})
         async with self.lock:
@@ -156,7 +157,7 @@ class Hub:
 
     async def ambient(self, image):
         """Spare compute: while nobody is talking, look through the camera and remember what is there."""
-        if self.glancing or self.lock.locked() or not self.started:
+        if self.glancing or self.lock.locked() or not self.started or self.paused:
             return
         self.glancing = True
         try:
@@ -236,6 +237,14 @@ async def ui_ws(ws: WebSocket):
                 asyncio.create_task(hub.ambient(m["image"]))
             elif m["type"] == "frame":
                 asyncio.create_task(hub.see(m["image"], m.get("mode")))
+            elif m["type"] == "mic":
+                hub.muted = not m.get("on", True)
+                await hub.ui({"type": "controls", "muted": hub.muted, "paused": hub.paused})
+            elif m["type"] == "pause":
+                hub.paused = bool(m.get("on"))
+                if hub.paused and hub.speech:
+                    await hub.speech.send_text(json.dumps({"type": "stop"}))
+                await hub.ui({"type": "controls", "muted": hub.muted, "paused": hub.paused})
             elif m["type"] == "timer":
                 await hub.ui({"type": "note", "text": "Time is up."})
                 await hub.speak("Time is up.")
@@ -259,8 +268,12 @@ async def speech_ws(ws: WebSocket):
                 hub.speech_info = {k: m.get(k) for k in ("stt", "tts", "pro")}
                 await hub.ui({"type": "speech", "speech": hub.speech_info})
             elif t == "utterance":
-                asyncio.create_task(hub.hear(m.get("text", ""), m.get("speaker")))
-            elif t in ("hypothesis", "level", "speaking", "spoken"):
+                if not (hub.muted or hub.paused):
+                    asyncio.create_task(hub.hear(m.get("text", ""), m.get("speaker")))
+            elif t in ("hypothesis", "level"):
+                if not (hub.muted or hub.paused):
+                    await hub.ui(m)
+            elif t in ("speaking", "spoken"):
                 await hub.ui(m)
     except WebSocketDisconnect:
         pass

@@ -1,0 +1,48 @@
+id: dizzy
+title: Feeling faint
+short: the faint feeling
+priority: 3
+when: "someone awake who feels faint, dizzy, lightheaded, or about to pass out, without having collapsed"
+triggers: [lightheaded, light headed, feel faint, feeling faint, about to pass out, going to pass out, woozy]
+facts:
+  - "Lying flat with the legs raised brings blood back to the head."
+  - "If lying down is not possible, sit with the head between the knees."
+  - "Get up slowly, in stages. Sit first, then stand."
+  - "Heat, hunger, thirst, and standing up fast are the common causes."
+  - "A faint with chest pain, a pounding heart, or weakness on one side needs a doctor."
+start: down
+nodes:
+  down:
+    do: "Lie down flat now and raise the legs. Or sit with the head between the knees. Say done."
+    log: "Lying down, legs raised"
+    cant: flags
+    next: flags
+  flags:
+    ask: "Any pain or pressure in the chest, trouble breathing, a racing or uneven heartbeat, a severe headache, or weakness on one side?"
+    yes: urgent
+    no: cause
+    unsure: urgent
+  urgent:
+    do: "That needs a doctor urgently. Stay lying down. Send someone for help or start satellite S O S."
+    log: "Faintness with warning signs. Help sent for"
+    then: finish
+  cause:
+    ask: "Could it be heat, not eating, not drinking enough, or standing up too fast?"
+    yes: fix
+    no: wait
+    unsure: wait
+  fix:
+    do: "Stay down a few minutes. Then sip water and eat something small. Cool off if it is hot. Say done."
+    log: "Rest, water, and food"
+    next: up
+  wait:
+    do: "Stay down for ten minutes and breathe slowly. Say done."
+    log: "Rested lying down"
+    next: up
+  up:
+    do: "Get up slowly, in stages. Sit first, then stand. If it comes back, lie down again."
+    then: mild_end
+  mild_end:
+    end: "If you actually pass out, or it keeps coming back, you need a doctor. Tell me if anything changes."
+  finish:
+    end: "Steps complete. Stay with them. Say report for the handoff note."

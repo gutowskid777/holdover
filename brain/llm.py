@@ -65,6 +65,28 @@ class Bonsai:
         picks = self.triage_all(text, protocols)
         return picks[0] if picks else None
 
+    def open(self, text, turns=()):
+        """Open mode: no checked protocol covers this, so Bonsai talks it through from general first-aid
+        knowledge. Always labelled as such on screen and in the handoff note."""
+        system = ("You are Holdover, a calm first-aid dispatcher that runs fully offline. No checked protocol covers "
+                  "this topic, so you are answering from general first-aid knowledge. Rules: at most 3 short "
+                  "sentences in plain spoken words. Give only basic, widely accepted first aid. Never diagnose: "
+                  "you may say what it could be, as a possibility. Always say which warning signs mean they need a "
+                  "doctor or emergency care. If one missing detail would change the advice, ask ONE short question "
+                  "instead of advising. No lists, no symbols, no abbreviations.")
+        msgs = [{"role": "system", "content": system}]
+        for who, said in list(turns)[-6:]:
+            msgs.append({"role": "user" if who == "caller" else "assistant", "content": said})
+        msgs.append({"role": "user", "content": text})
+        body = {"model": self._model(), "max_tokens": 110, **SAMPLING, "temperature": 0.4, "messages": msgs}
+        t = time.time()
+        r = self.http.post(self.url + "/chat/completions", json=body)
+        r.raise_for_status()
+        out = (r.json()["choices"][0]["message"]["content"] or "").strip().replace("\n", " ")
+        self.calls.append(("open", round(time.time() - t, 2)))
+        parts = re.split(r"(?<=[.!?])\s+", out)
+        return " ".join(parts[:3]).replace("*", "")
+
     def prefill(self, items, text):
         """Skip-ahead. items = [(id, question, {label: meaning})]. Returns {id: label} ONLY for questions
         the caller has already clearly answered in what they said. Everything else stays unasked-and-unknown."""

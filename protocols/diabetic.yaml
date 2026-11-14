@@ -1,0 +1,68 @@
+id: diabetic
+title: Low blood sugar
+short: the low blood sugar
+priority: 2
+when: "a person with diabetes, or someone who has not eaten, who is shaky, sweaty, confused, weak, or acting drunk: low blood sugar"
+triggers: [diabetic, diabetes, low blood sugar, blood sugar, hypoglycemia, insulin]
+facts:
+  - "If you cannot tell whether the sugar is high or low, give sugar. It will not harm in the short term."
+  - "Half a cup of juice or regular soda, three to four glucose tablets, or a spoonful of sugar or honey."
+  - "A diet drink has no sugar and will not work."
+  - "Never put food or drink in the mouth of someone who is not awake or cannot swallow."
+  - "It takes about fifteen minutes for sugar to work."
+  - "After they feel better they need a real snack so it does not drop again."
+  - "Do not give insulin."
+start: awake
+nodes:
+  awake:
+    ask: "Are they awake and able to swallow safely?"
+    yes: signs
+    no: nothing
+    unsure: nothing
+  nothing:
+    do: "Put nothing in the mouth. Roll them onto their side. Send someone for help or start satellite S O S."
+    log: "Not able to swallow. On side, help sent for"
+    then: kit
+  kit:
+    do: "If they carry a glucagon kit and you have been shown how to use it, use it now. Tell me at once if they stop breathing."
+    then: finish
+  signs:
+    ask: "Are they shaky, sweaty, confused, weak, or very hungry?"
+    yes: sugar
+    no: other
+    unsure: sugar
+  sugar:
+    do: "Give sugar now. Half a cup of juice or regular soda, three to four glucose tablets, or a spoonful of sugar or honey. Not a diet drink. Say done."
+    log: "Sugar given by mouth"
+    cant: no_sugar
+    next: wait
+  no_sugar:
+    do: "Then use any sweet food you have. Candy, dried fruit, or a sweet snack. Say done."
+    log: "Sweet food given"
+    next: wait
+  wait:
+    do: "Keep them sitting and resting. I am timing fifteen minutes."
+    timer: 900
+    then: better
+  better:
+    ask: "Are they feeling better and thinking clearly?"
+    yes: snack
+    no: again
+    unsure: again
+  again:
+    do: "Give the same amount of sugar again. Send someone for help or start satellite S O S."
+    log: "Not improved. Second sugar dose, help sent for"
+    then: finish
+  snack:
+    do: "Good. Now have them eat a real snack, like bread, crackers, or a meal. Say done."
+    log: "Improved. Snack given"
+    next: mild_end
+  other:
+    do: "This does not sound like low blood sugar. If they are very thirsty, breathing fast, or their breath smells fruity, they need a doctor urgently."
+    then: other_end
+  other_end:
+    end: "Tell me what else is wrong."
+  mild_end:
+    end: "Keep an eye on them for the next hour. Tell me at once if the shaking or confusion comes back."
+  finish:
+    end: "Blood sugar steps complete. Stay with them. Say report for the handoff note."

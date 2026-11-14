@@ -1,0 +1,45 @@
+id: stomach
+title: Vomiting or diarrhea
+short: the stomach bug
+priority: 3
+when: "nausea, throwing up, diarrhea, or food poisoning from bad food or water"
+triggers: [food poisoning, diarrhea, the runs, stomach bug, bad water]
+facts:
+  - "The danger is drying out. Fluids matter more than food."
+  - "Small sips every few minutes stay down better than a full cup."
+  - "After vomiting, wait ten minutes before the next sip."
+  - "When hungry again, start with plain food like crackers, rice, or bananas."
+  - "Wash hands well and do not prepare food for others."
+  - "Blood in the vomit or stool, or severe belly pain, needs a doctor."
+  - "Nothing staying down for a full day needs a doctor."
+start: flags
+nodes:
+  flags:
+    ask: "Any blood in the vomit or stool, severe belly pain, a high fever, or confusion?"
+    yes: evac
+    no: rest
+    unsure: evac
+  evac:
+    do: "That needs a doctor. Send someone for help or start satellite S O S. Keep giving small sips if they are fully awake."
+    log: "Warning signs with vomiting or diarrhea. Help sent for"
+    then: finish
+  rest:
+    do: "Rest. No solid food for now. Take small sips of water or a rehydration drink every few minutes. Say done."
+    log: "Resting, small sips"
+    next: keep
+  keep:
+    ask: "Are the fluids staying down?"
+    yes: bland
+    no: slow
+    unsure: slow
+  slow:
+    do: "After each time they vomit, wait ten minutes. Then one small sip every few minutes. If nothing stays down for a full day, or they stop passing urine, they need a doctor."
+    log: "Not keeping fluids down. Slow sips"
+    then: mild_end
+  bland:
+    do: "Good. When hungry, start with plain food like crackers, rice, or bananas. Wash hands well."
+    then: mild_end
+  mild_end:
+    end: "Keep sipping. If blood, severe pain, or confusion starts, tell me at once."
+  finish:
+    end: "Steps complete. Say report for the handoff note."

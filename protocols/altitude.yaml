@@ -1,0 +1,48 @@
+id: altitude
+title: Altitude sickness
+short: the altitude sickness
+priority: 2
+when: "high in the mountains with a headache, nausea, dizziness, tiredness, poor sleep, breathlessness, or stumbling: altitude sickness"
+triggers: [altitude, altitude sickness, mountain sickness, elevation sickness, thin air]
+facts:
+  - "The cure for altitude sickness is going down."
+  - "Never climb higher with symptoms."
+  - "Confusion or stumbling like a drunk person means the brain is swelling. Go down now."
+  - "Breathless at rest, or a wet cough, means fluid in the lungs. Go down now."
+  - "Going down one thousand to three thousand feet is usually enough to feel better."
+  - "Never leave a sick person alone and never send them down alone."
+  - "No alcohol and no sleeping pills."
+start: flags
+nodes:
+  flags:
+    ask: "Any confusion, stumbling like they are drunk, being breathless while resting, or a wet cough?"
+    yes: descend
+    no: stop
+    unsure: descend
+  descend:
+    do: "This is severe altitude sickness. Go down now, at least one thousand to three thousand feet, as soon as it is safe to move. Do not wait for morning if you can travel safely. Send for help or start satellite S O S."
+    log: "Severe altitude sickness. Immediate descent advised"
+    then: descend_care
+  descend_care:
+    do: "Keep them warm. Someone else carries their pack. Sit them upright if breathing is hard. Never leave them alone."
+    then: finish
+  stop:
+    do: "Stop climbing. Do not go any higher today. Rest. Say done."
+    log: "Mild altitude sickness. Stopped ascent"
+    next: care
+  care:
+    do: "Drink water. A plain painkiller like ibuprofen or acetaminophen is fine for the headache if they normally take it. No alcohol. Say done."
+    next: better
+  better:
+    ask: "After a few hours of rest, are the symptoms getting better?"
+    yes: mild_end
+    no: down
+    unsure: down
+  down:
+    do: "Then go down. Symptoms that do not improve, or that get worse, mean descend."
+    log: "Not improving. Descent advised"
+    then: finish
+  mild_end:
+    end: "Stay at this height until you feel normal. If confusion, stumbling, or breathlessness at rest starts, go down at once."
+  finish:
+    end: "Altitude steps complete. Say report for the handoff note."

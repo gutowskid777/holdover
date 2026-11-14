@@ -1,0 +1,44 @@
+id: back
+title: Back pain
+short: the back pain
+priority: 4
+when: "back pain from lifting, twisting, carrying a pack, or sleeping badly, or a back that has seized up, with no fall from a height"
+triggers: [threw out my back, threw my back out, back went out, back pain, lower back, my back hurts, back spasm, pulled my back]
+facts:
+  - "Numbness or weakness in the legs, or loss of bladder or bowel control, is an emergency."
+  - "Back pain after a fall or a hard hit is treated as a spine injury. Do not move them."
+  - "Lying on the back with the knees bent over a pack often eases a strained back."
+  - "Cold for twenty minutes, wrapped in cloth, helps on the first day."
+  - "After the first day, gentle walking is better than lying still."
+  - "A plain painkiller is fine if they normally take it."
+start: flags
+nodes:
+  flags:
+    ask: "Was there a fall or a hard hit, or is there numbness, tingling, or weakness in the legs, or loss of bladder or bowel control?"
+    yes: spine
+    no: kidney
+    unsure: spine
+  spine:
+    do: "Do not move them. Keep the head, neck, and back still. Send someone for help or start satellite S O S."
+    log: "Possible spine injury. Not moved, help sent for"
+    then: finish
+  kidney:
+    ask: "Is there a fever, or pain in the side with burning or bloody urine?"
+    yes: doctor
+    no: care
+    unsure: doctor
+  doctor:
+    do: "That needs a doctor soon. Rest, drink water, and plan to get out."
+    log: "Back pain with fever or urine signs. Doctor advised"
+    then: finish
+  care:
+    do: "Rest in the position that hurts least. Lying on the back with the knees bent over a pack often helps. Say done."
+    log: "Strained back. Resting"
+    next: cold
+  cold:
+    do: "Put something cold on it, wrapped in cloth, for twenty minutes. After today, gentle walking is better than lying still. A plain painkiller is fine if they normally take it."
+    then: mild_end
+  mild_end:
+    end: "No heavy pack until it settles. If numbness or weakness in the legs starts, tell me at once."
+  finish:
+    end: "Back pain steps complete. Say report for the handoff note."

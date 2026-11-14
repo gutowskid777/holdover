@@ -15,13 +15,14 @@ from llm import Bonsai
 ap = argparse.ArgumentParser()
 ap.add_argument("--url", default="http://127.0.0.1:8080/v1")
 ap.add_argument("--only")
+ap.add_argument("--file", default="scenarios.yaml")
 ap.add_argument("-v", action="store_true")
 a = ap.parse_args()
 
 P = load_protocols(ROOT / "protocols")
 assert not validate(P), validate(P)
 llm = Bonsai(a.url)
-scen = yaml.safe_load((ROOT / "tests" / "scenarios.yaml").read_text())
+scen = yaml.safe_load((ROOT / "tests" / a.file).read_text())
 if a.only:
     scen = [s for s in scen if a.only in s["name"]]
 

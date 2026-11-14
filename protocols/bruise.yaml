@@ -1,0 +1,141 @@
+id: bruise
+title: Bruise
+short: the bruise
+priority: 4
+when: "a bruise, black and blue mark, black eye, or sore swollen spot after a hit, a punch, a fall, or sport, and worry about bleeding under the skin or inside"
+triggers: [bruise, bruised, bruises, bruising, "black eye", "black and blue", contusion, hematoma]
+facts:
+  - "A bruise is a small amount of bleeding under the skin. That is normal, and the body clears it."
+  - "Dangerous bleeding inside shows as dizziness, fainting, pale clammy skin, a fast pulse, or a hard, swollen, painful belly."
+  - "Cold goes on for twenty minutes at a time, wrapped in cloth, a few times a day for the first two days."
+  - "After two days, gentle warmth can help it clear."
+  - "Do not massage a fresh bruise."
+  - "A lump under a bruise is pooled blood. Most shrink on their own over a few weeks."
+  - "A bruise turns red or purple, then blue or black, then green and yellow, over about two weeks."
+  - "A bruise under a nail that throbs badly may need a doctor to drain it."
+  - "A bruise with no cause, or many bruises at once, needs a doctor."
+start: where
+entries:
+  - {words: ["black eye", head, face, forehead, temple, scalp, eye, jaw, cheek, nose], goto: head_check}
+  - {words: [chest, rib, ribs, belly, stomach, abdomen, side, flank, back, kidney, hip, groin], goto: trunk_check}
+  - {words: [arm, forearm, bicep, wrist, hand, finger, knuckle, elbow, shoulder, leg, thigh, quad, calf, shin, knee, ankle, foot, toe], goto: how}
+nodes:
+  where:
+    ask: "Where is the bruise?"
+    pick: "Is it on an arm or leg, on the head or face, or on the chest, belly, or back?"
+    unsure: trunk_check
+    choices:
+      limb:
+        means: "an arm, a leg, a hand, or a foot"
+        words: [arm, forearm, bicep, wrist, hand, finger, knuckle, elbow, shoulder, leg, thigh, quad, calf, shin, knee, ankle, foot, toe]
+        goto: how
+      head:
+        means: "the head or the face, including a black eye"
+        words: [head, face, forehead, temple, scalp, eye, jaw, cheek, nose]
+        goto: head_check
+      trunk:
+        means: "the chest, the ribs, the belly, the side, or the back"
+        words: [chest, rib, belly, stomach, abdomen, side, flank, back, kidney, hip, groin]
+        goto: trunk_check
+  head_check:
+    ask: "With the blow to the head, was there any confusion, vomiting, a headache that keeps getting worse, or were they knocked out?"
+    yes: "@head"
+    no: how
+    unsure: "@head"
+  trunk_check:
+    ask: "Any dizziness, feeling faint, trouble breathing, or pain in the belly or side that keeps getting worse?"
+    yes: trunk_bad
+    no: how
+    unsure: trunk_bad
+  trunk_bad:
+    do: "That can mean bleeding inside. Lay them down and keep them still and warm. Nothing to eat or drink. Send for help or start satellite S O S."
+    log: "Bruise on the body with warning signs. Possible internal bleeding. Evacuation advised"
+    then: serious_end
+  how:
+    ask: "Did it come from a hit, a fall, or a knock that you remember?"
+    yes_words: [boxing, sparring, punch, punched, hit, kicked, kick, fell, fall, bumped, banged, tackled, ball, crash, crashed, elbow, elbowed, fight, slammed, dropped, tripped]
+    yes: thinners
+    no: no_cause
+    unsure: no_cause
+  no_cause:
+    do: "A bruise with no cause should be seen by a doctor. That is not an emergency by itself."
+    log: "Bruise with no known cause"
+    then: thinners
+  thinners:
+    ask: "Are they on blood thinners, or do they bruise or bleed very easily?"
+    yes: thin_note
+    no: see
+    unsure: see
+  thin_note:
+    do: "Then a bruise can keep growing. Watch this one closely and have a doctor check it."
+    log: "On blood thinners or bleeds easily"
+    then: see
+  see:
+    look: "Show me the bruise. Hold it up to the camera."
+    question: "How does the bruise look?"
+    pick: "Is it flat, a raised lump, or very swollen and tight?"
+    unsure: growing
+    choices:
+      flat:
+        means: "flat discolored skin with little or no swelling"
+        words: [flat, discolored, purple, blue, yellow, green, mark]
+        goto: growing
+      lump:
+        means: "a raised lump or clear swelling"
+        words: [lump, bump, raised, swollen, swelling, puffy, knot, egg]
+        goto: growing
+      tense:
+        means: "very swollen with tight, shiny skin"
+        words: [tight, shiny, huge, tense, hard, rock]
+        goto: tight
+  growing:
+    ask: "Is the bruise or the swelling getting bigger fast, as you watch?"
+    yes: press
+    no: tight
+    unsure: press
+  press:
+    do: "That means it is still bleeding under the skin. Press on it firmly with a cloth and keep it raised. Say done."
+    log: "Bruise still growing. Firm pressure applied"
+    next: tight
+  tight:
+    ask: "Is the area rock hard and tight, with pain far worse than you would expect from a bruise?"
+    yes: pressure
+    no: beyond
+    unsure: pressure
+  pressure:
+    do: "That can be dangerous pressure building inside the muscle. Take off anything tight around it. Keep it level with the heart, not raised. This needs a hospital today. Send for help or start satellite S O S."
+    log: "Hard, tense, very painful swelling. Hospital today"
+    then: serious_end
+  beyond:
+    ask: "Past the bruise, is there numbness, tingling, or skin that has gone cold and pale?"
+    yes: squeezed
+    no: use
+    unsure: squeezed
+  squeezed:
+    do: "That means blood flow or a nerve is being squeezed. Keep it still and loosen anything tight around it. This needs a hospital today. Send for help or start satellite S O S."
+    log: "Numb, tingling, or cold past the bruise. Hospital today"
+    then: serious_end
+  use:
+    ask: "Can they move it and use it, even though it hurts?"
+    yes: ordinary
+    no: "@fracture"
+    unsure: "@fracture"
+  ordinary:
+    do: "Good. That sounds like an ordinary bruise. A little blood has leaked under the skin, and the body will clear it. Rest it for now."
+    log: "No warning signs. Treated as an ordinary bruise"
+    then: cold
+  cold:
+    do: "Put something cold on it, wrapped in cloth, for twenty minutes. Never ice straight on the skin. I am timing it. Say done."
+    timer: 1200
+    log: "Cold applied"
+    next: wrap
+  wrap:
+    do: "If it is on an arm or a leg, wrap it snugly, not tight, and raise it above the heart when you rest. Say done."
+    next: colors
+  colors:
+    do: "It will turn from red or purple, to blue or black, then green and yellow, over about two weeks. That is normal healing."
+    then: finish
+  finish:
+    end: "See a doctor if it keeps growing, turns hot and red, has not faded in two weeks, or hurts more instead of less. Say report for the handoff note."
+  serious_end:
+    end: "Keep them still and watch them. Tell me at once if they get dizzy, faint, or stop responding. Say report for the handoff note."

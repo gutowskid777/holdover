@@ -1,0 +1,52 @@
+id: drowning
+title: Pulled from the water
+short: the person from the water
+priority: 1
+when: "someone went under water, nearly drowned, or was pulled out of a lake, a river, a pool, or the sea, and is awake or coughing"
+triggers: [drowned, drowning, "nearly drowned", "almost drowned", "pulled from the water", "pulled out of the water", "pulled him out of the", "pulled her out of the", "went under"]
+facts:
+  - "Never jump in after someone. Reach with a pole or a rope, or throw something that floats."
+  - "Do not try to squeeze or pump water out of them."
+  - "Water in the lungs can get worse over the next hours."
+  - "Take off wet clothes and keep them warm."
+  - "Anyone who breathed in water should be seen by a doctor the same day."
+  - "If they stop breathing, start C P R."
+start: out
+nodes:
+  out:
+    ask: "Are they out of the water?"
+    yes: awake
+    no: reach
+    unsure: reach
+  reach:
+    do: "Do not jump in after them. Reach with a pole, a paddle, or a rope, or throw something that floats. Say done when they are out."
+    log: "Rescue by reaching or throwing"
+    next: awake
+  awake:
+    ask: "Are they awake and breathing?"
+    yes: cough
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  cough:
+    do: "Sit them up, or lay them on their side. Let them cough. Do not try to squeeze water out of them. Say done."
+    log: "Awake and breathing after going under"
+    next: warm
+  warm:
+    do: "Take off wet clothes and wrap them in something dry and warm. Say done."
+    log: "Dried and warmed"
+    next: lungs
+  lungs:
+    ask: "Is there a cough that will not stop, hard or fast breathing, or are they drowsy or confused?"
+    yes: evac
+    no: watch
+    unsure: evac
+  evac:
+    do: "Water in the lungs can get worse over hours. This needs a hospital. Send for help or start satellite S O S. Keep them sitting up and warm."
+    log: "Breathing trouble after going under. Evacuation advised"
+    then: finish
+  watch:
+    do: "Good. Keep them resting and warm, and do not leave them alone for the next several hours."
+    log: "No breathing trouble. Under watch"
+    then: finish
+  finish:
+    end: "Anyone who went under and breathed in water should be checked by a doctor today. Tell me at once if breathing gets worse or they get drowsy."

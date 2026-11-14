@@ -1,0 +1,63 @@
+id: seizure
+title: Seizure
+short: the seizure
+priority: 1
+when: "a seizure or convulsion: shaking or jerking all over, stiffening, staring and not responding, or just after one"
+triggers: [seizure, seizures, seizing, convulsing, convulsion, convulsions, having a fit, epileptic]
+facts:
+  - "Never hold them down and never put anything in the mouth. They cannot swallow their tongue."
+  - "Move hard or sharp things away and cushion the head."
+  - "Most seizures stop on their own within a few minutes."
+  - "Five minutes or longer, or a second seizure, is an emergency."
+  - "Afterwards they are confused and sleepy for a while. That is normal."
+  - "Nothing to eat or drink until they are fully awake."
+  - "Noisy breathing or blue lips during the shaking usually passes when it stops."
+start: now
+nodes:
+  now:
+    ask: "Are they shaking or stiff right now?"
+    yes: protect
+    no: after
+    unsure: protect
+  protect:
+    do: "Do not hold them down. Put nothing in the mouth. Move hard things away and cushion the head. Say done."
+    log: "Seizure in progress. Head protected"
+    cant: timing
+    next: timing
+  timing:
+    do: "I am timing it. Loosen anything tight around the neck and stay beside them."
+    timer: 300
+    then: stopped
+  stopped:
+    ask: "Has the shaking stopped?"
+    yes: after
+    no: long
+    unsure: long
+  long:
+    do: "If it reaches five minutes, or a second one starts, it is an emergency. Send someone for help or start satellite S O S. Keep protecting the head. Say done when the shaking stops."
+    log: "Seizure continuing. Help advised"
+    next: after
+  after:
+    ask: "Are they breathing?"
+    yes: side
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  side:
+    do: "Roll them onto their side so the airway stays clear. Say done."
+    log: "Seizure over. Placed on side"
+    cant: flags
+    next: flags
+  flags:
+    ask: "Is this their first seizure, or was there a head injury, water, pregnancy, diabetes, or more than five minutes of shaking?"
+    yes: evac
+    no: rest
+    unsure: evac
+  evac:
+    do: "They need a doctor urgently. Send someone for help or start satellite S O S."
+    log: "Evacuation advised"
+    then: rest
+  rest:
+    do: "They may be confused and sleepy for a while. That is normal. Stay with them and speak calmly. Nothing to eat or drink until fully awake."
+    then: finish
+  finish:
+    end: "Seizure steps complete. Say report for the handoff note. Tell me at once if another one starts."

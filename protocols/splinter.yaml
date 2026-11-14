@@ -1,0 +1,76 @@
+id: splinter
+title: Splinter or fish hook
+short: the splinter or hook
+priority: 5
+when: "a splinter, a thorn, a cactus spine, or a fish hook stuck in the skin"
+triggers: [splinter, splinters, sliver, thorn, "cactus spine", "fish hook", fishhook, "hook in my", "hook in his", "hook in her", "hook stuck"]
+facts:
+  - "Pull a splinter out along the same line it went in."
+  - "Never dig for a deep splinter. Cover it and let a doctor take it out."
+  - "A hook near an eye, in the face, or in a joint is never pulled on the trail."
+  - "Wash the spot with soap and water after anything comes out."
+  - "Check that their tetanus shot is within the last ten years."
+  - "Redness that spreads, pus, or red streaks mean infection."
+start: kind
+entries:
+  - {words: ["fish hook", fishhook, hook, lure], goto: hook_where}
+  - {words: [splinter, sliver, thorn, "cactus spine"], goto: grab}
+nodes:
+  kind:
+    ask: "Is it a splinter or a thorn, or is it a fish hook?"
+    pick: "Is it a splinter, or a fish hook?"
+    unsure: hook_where
+    choices:
+      splinter:
+        means: "a splinter, a thorn, a spine, or a sliver of wood, glass, or metal"
+        words: [splinter, sliver, thorn, wood, glass, spine, cactus, metal]
+        goto: grab
+      hook:
+        means: "a fish hook"
+        words: [hook, fishhook, lure, barb, fishing]
+        goto: hook_where
+  grab:
+    ask: "Is it small and near the surface, with an end you can see or grab?"
+    yes: pull
+    no: leave
+    unsure: leave
+  pull:
+    do: "Wash your hands and the skin. Grip the end with tweezers and pull it out along the same line it went in. Say done, or say you cannot."
+    log: "Splinter pulled out"
+    cant: leave
+    next: clean
+  clean:
+    do: "Wash the spot with soap and water and cover it. Say done."
+    next: finish
+  leave:
+    do: "Leave it in and do not dig. Cover it with a clean dressing and have a doctor take it out."
+    log: "Deep splinter left in place"
+    then: finish
+  hook_where:
+    ask: "Is the hook in or near an eye, in the face, in a joint, or buried deep?"
+    yes: hook_leave
+    no: barb
+    unsure: hook_leave
+  hook_leave:
+    do: "Do not pull it. Cut the line, tape the hook down so it cannot move, and get to a doctor. Say done."
+    log: "Hook left in place and taped"
+    next: finish
+  barb:
+    ask: "Is the barb buried under the skin?"
+    yes: string
+    no: back_out
+    unsure: string
+  back_out:
+    do: "Back it out gently, the same way it went in. Say done."
+    log: "Hook backed out"
+    next: hook_clean
+  string:
+    do: "Loop a strong line around the bend of the hook. Press the eye of the hook down flat against the skin. Then give the line one quick, firm pull, straight back along the skin. Say done, or say you cannot."
+    log: "Hook removed with the string pull"
+    cant: hook_leave
+    next: hook_clean
+  hook_clean:
+    do: "Wash it well with soap and water, press until the bleeding stops, and cover it. Say done."
+    next: finish
+  finish:
+    end: "Watch for redness, swelling, or pus over the next days. Check that their tetanus shot is within ten years. Tell me if anything changes."

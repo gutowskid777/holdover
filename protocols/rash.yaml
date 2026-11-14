@@ -1,0 +1,32 @@
+id: rash
+title: Plant rash
+short: the rash
+priority: 5
+when: "an itchy rash or blisters after touching poison ivy, poison oak, poison sumac, or stinging nettles"
+triggers: ["poison ivy", "poison oak", "poison sumac", nettle, nettles, "stinging nettle"]
+facts:
+  - "The plant oil causes the rash. Wash it off with soap and lots of cool water."
+  - "The oil stays on clothes, tools, and pets until it is washed off."
+  - "The rash itself does not spread from person to person."
+  - "Cool wet cloths, calamine, or hydrocortisone cream ease the itch."
+  - "Scratching can infect it."
+  - "Never burn these plants. The smoke can hurt the lungs."
+start: react
+nodes:
+  react:
+    ask: "Any trouble breathing, swelling of the face or throat, or a rash over the whole body?"
+    yes: "@allergic"
+    no: wash
+    unsure: "@allergic"
+  wash:
+    do: "Wash the skin with soap and lots of cool water as soon as you can, and scrub under the nails. Say done."
+    log: "Skin washed"
+    next: clothes
+  clothes:
+    do: "Take off and bag any clothing that touched the plant. The oil stays on cloth, tools, and pets. Say done."
+    next: itch
+  itch:
+    do: "For the itch, use cool wet cloths, calamine, or hydrocortisone cream if you have it. Try not to scratch. Say done."
+    next: finish
+  finish:
+    end: "It can take two to three weeks to clear. See a doctor if it is on the face or the groin, covers a lot of skin, or shows pus. Tell me if anything changes."

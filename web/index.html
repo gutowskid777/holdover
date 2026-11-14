@@ -99,7 +99,7 @@ header .sp{flex:1}
 #beat.tick{background:rgba(255,74,38,.28)}
 #std{display:none;margin:12px 22px 0;padding:12px 14px;border:1px solid rgba(125,255,161,.35);border-radius:14px;font-size:11px;line-height:1.7;color:var(--dim)}
 #std.on{display:block} #std b{color:var(--ok);font-weight:600;font-size:13px}
-#loglist>div.voice p{color:#d9a8ff} #loglist>div.skip p{color:var(--warn)}
+#loglist>div.voice p{color:#d9a8ff} #loglist>div.open p{color:var(--warn)} #loglist>div.skip p{color:var(--warn)}
 #log{flex:1;min-height:0;overflow:auto;margin:16px 0 0;padding:0 22px 12px;border-top:1px solid var(--line)}
 #log h3{font-size:11px;color:var(--dim);font-weight:500;padding:14px 0 8px;position:sticky;top:0;background:var(--panel)}
 #loglist>div{display:grid;grid-template-columns:48px 1fr;gap:10px;font-size:13px;line-height:1.35;padding:6px 0;border-top:1px dashed #1c1f23}
@@ -113,6 +113,10 @@ footer{grid-column:1/3;border-top:1px solid var(--line);display:flex;align-items
 #say:focus{border-color:var(--hot)}
 footer button{height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--line);font-weight:600;font-size:14px}
 footer button:hover{border-color:var(--ink)}
+footer button.off{background:#2a2206;border-color:#6b5a12;color:var(--warn)}
+#paused{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.6);font-size:44px;font-weight:800;letter-spacing:-.02em;z-index:5}
+#paused.on{display:grid}
+#openflag{display:none;margin-top:10px;font-size:10px;color:var(--warn)} #openflag.on{display:block}
 footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
 
 /* report */
@@ -162,6 +166,7 @@ footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
     <div id="scene" class="mono"><i></i><span id="scenet">CAMERA IDLE</span></div>
     <div id="snap"><div class="frame"></div><div class="t mono">HOLD IT STILL IN THE FRAME</div><div class="n" id="snapn">3</div></div>
     <div id="flash"></div>
+    <div id="paused">Paused</div>
     <div id="caps">
       <div id="said"></div>
       <div id="heard"></div>
@@ -170,7 +175,7 @@ footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
 
   <div id="rail">
     <div id="proto"><small class="mono">PROTOCOL</small><h2 id="title">Listening</h2></div>
-    <div id="step"><div class="k mono" id="kind">TELL ME WHAT IS HAPPENING</div><div class="s" id="steptext">Say it out loud, in your own words.</div><div id="chips"></div></div>
+    <div id="step"><div class="k mono" id="kind">TELL ME WHAT IS HAPPENING</div><div class="s" id="steptext">Say it out loud, in your own words.</div><div id="openflag" class="mono">OPEN MODE · BONSAI ANSWERING FROM GENERAL KNOWLEDGE, NOT A CHECKED PROTOCOL</div><div id="chips"></div></div>
     <div id="aids">
       <div id="timer"><small class="mono">TIMER</small><b id="timern">00:00</b></div>
       <div id="beat"><small class="mono">PUSH TO THE BEAT</small><b id="beatn">110</b></div>
@@ -182,6 +187,8 @@ footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
 
   <footer>
     <input id="say" placeholder="Speak, or type here and press return" autocomplete="off">
+    <button id="b-mic">Mic on</button>
+    <button id="b-pause">Pause</button>
     <button id="b-look">Look at this</button>
     <button id="b-report">Handoff note</button>
     <button id="b-end" class="end">End call</button>
@@ -222,6 +229,7 @@ function on(m){
   if (m.type === 'speaking'){ $('disp').classList.toggle('talk', m.on); talking = m.on; }
   if (m.type === 'level') $('orb').style.transform = `scale(${1 + Math.min(.5, m.rms * 3)})`;
   if (m.type === 'state') state(m);
+  if (m.type === 'controls') controls(m);
   if (m.type === 'note'){ $('said').textContent = m.text; if (!speech) fallbackSpeak([m.text]); }
   if (m.type === 'scene'){ $('scene').className = 'mono ' + (m.text ? 'hit' : ''); $('scenet').textContent = m.text ? 'CAMERA SEES: ' + m.text.toUpperCase() : `WATCHING · NOTHING TO NOTE · ${m.ms}MS`; }
   if (m.type === 'hypothesis' || m.type === 'heard' || m.type === 'speaking') lastVoice = Date.now();
@@ -243,6 +251,8 @@ function state(s){
   const kinds = {ask:'ANSWER OUT LOUD', do:'DO THIS, THEN SAY DONE', look:'SHOW THE CAMERA', end:'STEPS COMPLETE', triage:'TELL ME WHAT IS HAPPENING'};
   $('kind').textContent = kinds[s.kind] || '';
   $('steptext').textContent = s.step || 'Say it out loud, in your own words.';
+  $('openflag').classList.toggle('on', !!s.open);
+  if (s.open){ $('title').textContent = 'Open conversation'; $('kind').textContent = 'TALK TO ME'; $('steptext').textContent = s.say.join(' '); }
   const sk = (s.log || []).filter(e => e.kind === 'skip').length;
   if (sk) $('kind').textContent += ` · SKIPPED ${sk} QUESTION${sk > 1 ? 'S' : ''} YOU ALREADY ANSWERED`;
   const chips = $('chips'); chips.innerHTML = '';
@@ -278,6 +288,17 @@ function state(s){
 /* ---------- talking to it */
 function say(text){ if (!text.trim()) return; send({type:'text', text}); }
 $('say').onkeydown = e => { if (e.key === 'Enter'){ say($('say').value); $('say').value = ''; } };
+let micOn = true, paused = false;
+$('b-mic').onclick = () => send({type:'mic', on: !micOn});
+$('b-pause').onclick = () => send({type:'pause', on: !paused});
+function controls(m){
+  micOn = !m.muted; paused = m.paused;
+  $('b-mic').textContent = micOn ? 'Mic on' : 'Mic off'; $('b-mic').classList.toggle('off', !micOn);
+  $('b-pause').textContent = paused ? 'Resume' : 'Pause'; $('b-pause').classList.toggle('off', paused);
+  $('paused').classList.toggle('on', paused);
+  if (!micOn || paused){ $('heard').className = ''; $('heard').textContent = paused ? 'Paused. Nothing is being heard.' : 'Mic is off. Type below.'; }
+  if (paused) beat(0);
+}
 $('b-look').onclick = () => capture('describe');
 $('b-report').onclick = () => send({type:'report'});
 $('b-end').onclick = () => { send({type:'report'}); };
@@ -314,7 +335,7 @@ function capture(mode){
 /* ---------- idle watching: spare compute looks through the camera when nobody is talking */
 setInterval(() => {
   const v = $('cam');
-  if (!t0 || !v.srcObject || capturing || talking || Date.now() - lastVoice < 3500 || $('report').classList.contains('on')) return;
+  if (!t0 || !v.srcObject || capturing || talking || paused || Date.now() - lastVoice < 3500 || $('report').classList.contains('on')) return;
   const c = $('grab'); c.width = 384; c.height = Math.round(384 * v.videoHeight / v.videoWidth);
   c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
   $('scene').className = 'mono look'; $('scenet').textContent = 'WATCHING';

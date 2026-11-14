@@ -1,0 +1,44 @@
+id: monoxide
+title: Carbon monoxide
+short: the carbon monoxide
+priority: 1
+when: "headache, dizziness, nausea, or sleepiness in a tent, cabin, camper, or boat cabin where a stove, heater, lantern, grill, or engine is running: carbon monoxide"
+triggers: [carbon monoxide, monoxide, stove in the tent, heater in the tent, grill in the tent, exhaust fumes, generator fumes]
+facts:
+  - "Carbon monoxide has no smell and no color."
+  - "Fresh air is the treatment. Get everyone out first."
+  - "Several people feeling sick at once in a closed space is the warning sign."
+  - "Never burn a stove, grill, lantern, or heater inside a tent or closed cabin."
+  - "Feeling better outside does not mean it is over. They still need a doctor."
+  - "Do not go back in to stay until it is fully aired out and nothing is burning."
+start: out
+nodes:
+  out:
+    do: "Get everyone out into fresh air right now. Leave the door open behind you. Say done when you are outside."
+    log: "Everyone moved to fresh air"
+    next: source
+  source:
+    do: "Turn off the stove, heater, or engine only if you can do it in one breath. Do not stay inside."
+    then: awake
+  awake:
+    ask: "Is everyone awake and breathing normally?"
+    yes: symptoms
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  symptoms:
+    ask: "Does anyone have a headache, dizziness, nausea, confusion, or a racing heart?"
+    yes: evac
+    no: watch
+    unsure: evac
+  evac:
+    do: "Treat that as carbon monoxide poisoning. Send someone for help or start satellite S O S. Keep them resting in fresh air and keep them warm."
+    log: "Symptoms of carbon monoxide poisoning. Help sent for"
+    then: finish
+  watch:
+    do: "Stay in fresh air for now. Do not sleep in there tonight unless it is fully aired out and nothing is burning."
+    log: "No symptoms. Space to be aired out"
+    then: mild_end
+  mild_end:
+    end: "If a headache, dizziness, or nausea starts in anyone, tell me at once."
+  finish:
+    end: "Carbon monoxide steps complete. Say report for the handoff note. Tell me at once if anyone stops responding."

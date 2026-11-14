@@ -1,0 +1,44 @@
+id: tick
+title: Tick
+short: the tick
+priority: 5
+when: "a tick found on the skin or attached and biting"
+triggers: [tick, ticks]
+facts:
+  - "Pull a tick straight up with steady pressure. Do not twist or jerk."
+  - "Never use a match, nail polish, or petroleum jelly on a tick."
+  - "If the mouth parts stay in the skin, leave them. The skin will push them out."
+  - "Note the date of the bite."
+  - "A spreading rash, fever, or aches in the next month mean see a doctor."
+  - "Check the scalp, armpits, waistband, and behind the knees for more."
+start: attached
+nodes:
+  attached:
+    ask: "Is the tick attached, with its head in the skin?"
+    yes: pull
+    no: brush
+    unsure: pull
+  brush:
+    do: "Brush it off, then check the rest of the body. Scalp, armpits, waistband, and behind the knees. Say done."
+    next: finish
+  pull:
+    do: "Use fine tweezers. Grip the tick as close to the skin as you can. Pull straight up with steady, even pressure. Do not twist. Say done, or say you cannot."
+    log: "Tick removed"
+    cant: fingers
+    next: never
+  fingers:
+    do: "Then use your fingers through a tissue or a cloth. Grip close to the skin and pull straight up, slowly. Say done."
+    log: "Tick removed by hand"
+    next: never
+  never:
+    do: "No matches, no nail polish, no petroleum jelly."
+    then: clean
+  clean:
+    do: "Wash the bite and your hands with soap and water. If the mouth parts stayed in, leave them. Say done."
+    next: note
+  note:
+    do: "Note today's date and where on the body it was. Save the tick in a sealed bag if you can."
+    log: "Bite date and place noted"
+    then: finish
+  finish:
+    end: "Over the next month, a spreading rash, a fever, or aches mean see a doctor and mention the tick. Tell me if anything changes."

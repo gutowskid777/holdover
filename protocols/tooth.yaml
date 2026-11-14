@@ -1,0 +1,78 @@
+id: tooth
+title: Tooth injury
+short: the tooth
+priority: 4
+when: "a tooth that was knocked out, knocked loose, chipped, cracked, or broken"
+triggers: [tooth, teeth]
+facts:
+  - "Hold a knocked out tooth by the white chewing end. Never touch the root."
+  - "A knocked out adult tooth has the best chance if it goes back in within the hour."
+  - "A tooth must stay wet. Milk is best. Their own spit works. Plain water is the last choice."
+  - "Never scrub a knocked out tooth."
+  - "A baby tooth is never put back in."
+  - "Bite on a clean cloth to stop a bleeding gum."
+start: kind
+entries:
+  - {words: ["knocked out", "fell out", "came out", "popped out", "lost a tooth", "lost my tooth"], goto: adult}
+  - {words: [chipped, chip, cracked, broke, broken], goto: chip}
+  - {words: [loose, wobbly, wiggly], goto: loose}
+nodes:
+  kind:
+    ask: "Did the whole tooth come out, or is it chipped, or is it loose?"
+    pick: "Is the tooth all the way out, chipped, or loose?"
+    unsure: chip
+    choices:
+      out:
+        means: "the whole tooth came out"
+        words: [out, "knocked out", fell, lost, gone, missing]
+        goto: adult
+      chip:
+        means: "chipped, cracked, or broken"
+        words: [chipped, chip, cracked, crack, broke, broken, half, piece]
+        goto: chip
+      loose:
+        means: "loose or pushed out of place"
+        words: [loose, wobbly, wiggly, crooked, pushed, moved]
+        goto: loose
+  adult:
+    ask: "Is it an adult tooth, not a baby tooth?"
+    yes: find
+    no: baby
+    unsure: find_store
+  find:
+    do: "Find the tooth. Pick it up by the white chewing end only. Never touch the root. Say done."
+    next: rinse
+  rinse:
+    do: "If it is dirty, rinse it for a few seconds in milk or clean water. Do not scrub it."
+    then: back_in
+  back_in:
+    do: "Push it gently back into its socket, the right way round. Then have them bite down on a cloth to hold it. Say done, or say you cannot."
+    log: "Tooth put back in its socket"
+    cant: store
+    next: dentist
+  find_store:
+    do: "Find the tooth and pick it up by the white chewing end only. Never touch the root."
+    then: store
+  store:
+    do: "Keep the tooth wet. Put it in milk, or in a cup of their own spit. Never let it dry out. Say done."
+    log: "Tooth stored wet"
+    next: dentist
+  dentist:
+    do: "A dentist within the hour gives the best chance of saving it. For a bleeding gum, bite on a clean cloth."
+    then: finish
+  baby:
+    do: "Do not put a baby tooth back in. Have them bite on a clean cloth until the bleeding stops. Say done."
+    log: "Baby tooth, not put back"
+    next: finish
+  chip:
+    do: "Rinse the mouth with clean water and save any pieces. Hold something cold on the cheek for the swelling. Say done."
+    log: "Chipped tooth. Pieces saved"
+    next: chip_end
+  loose:
+    do: "Do not wiggle it. If it moves easily, press it gently back into line and bite softly on a cloth. Say done."
+    log: "Loose tooth steadied"
+    next: finish
+  chip_end:
+    end: "See a dentist soon. Go sooner if there is strong pain or a red spot in the middle of the break. Tell me if anything changes."
+  finish:
+    end: "See a dentist as soon as you can. Soft food only, on the other side. Tell me if anything changes."

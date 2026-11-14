@@ -1,0 +1,43 @@
+id: infection
+title: Infected wound
+short: the infected wound
+priority: 3
+when: "an older cut, scrape, blister, or bite that has become red, swollen, warm, painful, or full of pus: an infected wound, not fresh bleeding"
+triggers: [infected, infection, pus, oozing, red streaks, red line going up]
+facts:
+  - "Red streaks moving away from the wound, or a fever, mean it is spreading."
+  - "Warm soaks for twenty minutes, a few times a day, help draw it out."
+  - "Change the dressing every day and keep it dry between soaks."
+  - "A pen line around the redness shows whether it is spreading."
+  - "Do not squeeze it and do not seal it shut with glue or tape."
+  - "Spreading infection needs antibiotics from a doctor."
+start: spread
+nodes:
+  spread:
+    ask: "Are there red streaks moving away from the wound, a fever or chills, or swelling that is growing fast?"
+    yes: evac
+    no: local
+    unsure: evac
+  evac:
+    do: "The infection may be spreading. That needs a doctor soon. Plan to get out today, or send someone for help."
+    log: "Possible spreading infection. Evacuation advised"
+    then: soak
+  local:
+    ask: "Is it red, warm, sore, or leaking a little pus right at the wound?"
+    yes: soak
+    no: fine
+    unsure: soak
+  fine:
+    do: "That does not sound infected. Keep it clean, dry, and covered."
+    then: mild_end
+  soak:
+    do: "Wash it with soap and clean water. Then soak it in warm clean water for twenty minutes. Say done."
+    log: "Washed and soaked"
+    cant: cover
+    next: cover
+  cover:
+    do: "Put on a clean dry dressing and change it every day. Draw a pen line around the redness so you can see if it spreads. Say done."
+    log: "Dressed. Redness outlined"
+    next: mild_end
+  mild_end:
+    end: "If the redness passes the pen line, streaks appear, or a fever starts, they need a doctor. Tell me if anything changes."

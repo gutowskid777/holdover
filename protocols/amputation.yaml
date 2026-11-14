@@ -1,0 +1,66 @@
+id: amputation
+title: Cut off finger or limb
+short: the amputation
+priority: 2
+when: "a fingertip, a finger, a toe, a hand, or a limb that was cut off, torn off, or crushed off"
+triggers: [amputated, amputation, severed, "cut off my", "cut off his", "cut off her", "cut my finger off", "cut his finger off", "chopped off", "sliced off", "tore off", "ripped off", "fingertip"]
+facts:
+  - "Stop the bleeding first. The part comes second."
+  - "Wrap the part in a clean damp cloth, seal it in a plastic bag, and put the bag on ice."
+  - "The part must never touch ice directly and must never sit in water."
+  - "The part goes to the hospital with the person."
+  - "Note the time it happened."
+  - "A tourniquet goes two to three inches above the wound, never on a joint, and is never loosened."
+  - "Give nothing to eat or drink."
+start: press
+nodes:
+  press:
+    do: "First the bleeding. Press hard on the wound with a clean cloth and raise it above the heart. Say done when you are pressing."
+    log: "Direct pressure on the stump"
+    next: slowing
+  slowing:
+    ask: "Is the bleeding slowing down with the pressure?"
+    yes: part
+    no: tourniquet
+    unsure: tourniquet
+  tourniquet:
+    do: "Then it needs a tourniquet. Wrap a wide strap or a strip of cloth two to three inches above the wound, not on a joint. Twist it tight with a stick until the bleeding stops. Say done."
+    log: "Tourniquet applied"
+    cant: both_hands
+    next: part
+  both_hands:
+    do: "Then press harder, with both hands, and lean your weight in. Add more cloth on top. Do not lift it. Say done."
+    log: "No tourniquet. Two hand pressure"
+    next: part
+  part:
+    ask: "Do you have the part that came off?"
+    yes: bag
+    no: help
+    unsure: help
+  bag:
+    do: "Rinse it gently if it is dirty. Wrap it in a clean damp cloth and seal it in a plastic bag. Say done."
+    log: "Part wrapped and bagged"
+    next: ice
+  ice:
+    do: "Put that bag on ice or in cold water. The part itself must never touch ice or water. Say done, or say you cannot."
+    log: "Part kept cold"
+    cant: shade
+    next: help
+  shade:
+    do: "Then keep the bag as cool as you can and out of the sun."
+    then: help
+  help:
+    do: "Send for help or start satellite S O S. The part goes with them. I have logged the time."
+    log: "Evacuation advised"
+    then: shock
+  shock:
+    ask: "Are they pale, cold, sweaty, or faint?"
+    yes: shock_do
+    no: finish
+    unsure: shock_do
+  shock_do:
+    do: "Lay them flat and keep them warm. Nothing to eat or drink. Say done."
+    log: "Signs of shock. Laid flat and kept warm"
+    next: finish
+  finish:
+    end: "Keep the pressure on and keep the part cold. Say report for the handoff note, or tell me if anything changes."

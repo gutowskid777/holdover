@@ -1,0 +1,48 @@
+id: ribs
+title: Rib or chest blow
+short: the ribs
+priority: 3
+when: "a blow or a fall onto the chest or ribs: sore, bruised, or possibly cracked ribs, and pain when breathing in (an injury, not heart pain)"
+triggers: [rib, ribs, "wind knocked out"]
+facts:
+  - "Never wrap or tape the chest tight. It stops the lungs from filling."
+  - "Deep breaths every hour keep the lungs clear, even though it hurts."
+  - "Holding a pillow or a rolled jacket against the ribs eases a cough or a deep breath."
+  - "Bruised and cracked ribs take about six weeks."
+  - "Harder breathing, blue lips, or coughing up blood mean get help now."
+  - "Sitting up is easier than lying flat."
+start: breath
+nodes:
+  breath:
+    ask: "Is breathing hard, getting worse, or are the lips turning blue?"
+    yes: lung
+    no: inside
+    unsure: lung
+  lung:
+    do: "That can mean a damaged lung. Sit them up, leaning toward the hurt side. Send for help or start satellite S O S."
+    log: "Chest blow with breathing trouble. Evacuation advised"
+    then: serious_end
+  inside:
+    ask: "Are they coughing up blood, or is there pain in the belly or the left shoulder too?"
+    yes: organs
+    no: ordinary
+    unsure: organs
+  organs:
+    do: "That can mean an injury inside. Keep them still, half sitting. Nothing to eat or drink. Send for help or start satellite S O S."
+    log: "Chest blow with signs of injury inside. Evacuation advised"
+    then: serious_end
+  ordinary:
+    do: "That sounds like bruised or cracked ribs. Do not wrap or tape the chest tight."
+    log: "Bruised or cracked ribs, no warning signs"
+    then: cold
+  cold:
+    do: "Hold something cold, wrapped in cloth, on the sore spot for twenty minutes. I am timing it. Say done."
+    timer: 1200
+    next: breathe
+  breathe:
+    do: "Every hour, take ten slow deep breaths, holding a pillow or a rolled jacket against the ribs. It hurts, but it keeps the lungs clear. Say done."
+    next: finish
+  finish:
+    end: "Ribs take about six weeks. Get help if breathing gets harder, a fever starts, or they cough up blood. Tell me if anything changes."
+  serious_end:
+    end: "Keep them sitting up and still. Tell me at once if they stop responding or stop breathing."

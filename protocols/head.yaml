@@ -1,0 +1,76 @@
+id: head
+title: Head injury
+short: the head injury
+priority: 2
+when: "a blow, a fall, or a hit to the head: a bump, a possible concussion, dazed, saw stars, or a headache after hitting the head"
+triggers: [concussion, concussed, "head injury", "hit my head", "hit his head", "hit her head", "hit their head", "bumped my head", "banged my head", "banged his head", "banged her head", "cracked his head", "cracked my head"]
+facts:
+  - "Someone with a head injury may sleep, but check on them every few hours the first night."
+  - "A concussion means no sport, no climbing, and no driving until a doctor clears it."
+  - "Scalp cuts bleed a lot, even small ones."
+  - "Never press on a soft or dented part of the skull."
+  - "Clear fluid or blood from the nose or ears after a head blow is an emergency."
+  - "Worsening headache, repeated vomiting, drowsiness, or confusion mean get help now."
+  - "Give nothing to eat or drink if they are drowsy or vomiting."
+start: awake
+nodes:
+  awake:
+    ask: "Are they awake and answering you right now?"
+    yes: neck
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  neck:
+    ask: "Is there neck pain, or tingling, numbness, or weakness in the arms or legs?"
+    yes: spine
+    no: flags
+    unsure: spine
+  spine:
+    do: "Do not move them. Hold the head still, in the position you found it. Send for help or start satellite S O S."
+    log: "Possible neck injury, not moved. Evacuation advised"
+    then: serious_end
+  flags:
+    ask: "Were they knocked out, or is there a seizure, repeated vomiting, confusion, fluid from the nose or ears, or uneven pupils?"
+    yes: serious
+    no: bleeding
+    unsure: serious
+  serious:
+    do: "This is a serious head injury. Keep them lying still with the head and shoulders slightly raised. Nothing to eat or drink. Send for help or start satellite S O S."
+    log: "Serious head injury signs. Evacuation advised"
+    then: stay
+  stay:
+    do: "Stay with them and keep talking to them. Tell me at once if they will not wake or they stop breathing."
+    then: serious_end
+  bleeding:
+    ask: "Is the head bleeding?"
+    yes: press
+    no: dazed
+    unsure: dazed
+  press:
+    do: "Press on it firmly with a clean cloth. Scalp cuts bleed a lot. If the skull feels soft or dented, press around the spot, not on it. Say done."
+    log: "Scalp wound, pressure applied"
+    next: dazed
+  dazed:
+    ask: "Are they dazed, dizzy, foggy, sick to the stomach, or do they have a headache?"
+    yes: concussion
+    no: bump
+    unsure: concussion
+  concussion:
+    do: "That sounds like a concussion. Stop all activity for today. No sport, no climbing, no driving. Rest somewhere quiet."
+    log: "Concussion signs. Activity stopped"
+    then: cold
+  bump:
+    do: "That sounds like a simple bump."
+    log: "Simple bump, no warning signs"
+    then: cold
+  cold:
+    do: "Hold something cold on the bump, wrapped in cloth, for twenty minutes. I am timing it. Say done."
+    timer: 1200
+    next: watch
+  watch:
+    do: "Someone should stay with them for the next day. They can sleep, but check on them every few hours the first night and make sure they wake and make sense."
+    log: "Told to watch for a day"
+    then: finish
+  finish:
+    end: "Get help at once if the headache gets worse, they vomit again, they get drowsy or confused, or they act strange. Say report for the handoff note."
+  serious_end:
+    end: "Keep them still. Tell me at once if they will not wake or they stop breathing. Say report for the handoff note."
