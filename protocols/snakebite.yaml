@@ -1,0 +1,108 @@
+id: snakebite
+title: Snake or animal bite
+short: the bite
+priority: 3
+when: "bitten by a snake, a dog, a wild animal, or something that was not seen"
+facts:
+  - "Never cut a snake bite, suck it, ice it, or put a tourniquet or a pressure bandage on it."
+  - "No alcohol, and no painkillers like aspirin or ibuprofen after a snake bite."
+  - "Keeping still slows the spread of venom."
+  - "Do not try to catch or kill the snake. A photo from a safe distance is enough."
+  - "Keep the bitten limb still in a comfortable neutral position."
+  - "The only real treatment for venom is antivenom at a hospital. Do not wait for symptoms."
+  - "Swelling that spreads past your pen mark means venom is acting."
+  - "An animal bite needs a doctor within a day, because of rabies and tetanus."
+entries:
+  - {words: [snake, rattlesnake, rattler, copperhead, cottonmouth, viper, cobra, adder, moccasin], goto: away}
+  - {words: [dog, cat, bat, raccoon, fox, coyote, squirrel, monkey, rat], goto: animal_wash}
+start: what
+nodes:
+  what:
+    ask: "What was it that bit: a snake, an animal, or an insect?"
+    pick: "A snake, an animal, or an insect?"
+    unsure: unseen
+    choices:
+      snake:
+        means: "a snake"
+        words: [snake, rattlesnake, rattler, copperhead, cottonmouth, viper, cobra, adder, moccasin, coral]
+        goto: away
+      animal:
+        means: "a dog, a cat, a bat, a raccoon, or another animal"
+        words: [dog, cat, bat, raccoon, fox, coyote, squirrel, monkey, bear, rat, animal]
+        goto: animal_wash
+      insect:
+        means: "a bee, a wasp, a spider, a scorpion, or another insect"
+        words: [bee, wasp, hornet, spider, scorpion, ant, insect, bug, mosquito, jellyfish]
+        goto: "@allergic"
+  unseen:
+    do: "If you did not see it, we treat it as a snake bite."
+    then: still
+  away:
+    do: "Move away from the snake. Do not try to catch it or kill it. Say done when you are clear."
+    next: still
+  still:
+    do: "Sit down and keep still. Movement spreads venom. Rest the bitten limb in a comfortable position and do not move it. Say done."
+    log: "Kept still, limb at rest"
+    next: rings
+  rings:
+    do: "Take off rings, watches, and tight clothing near the bite before it swells. Say done."
+    next: dont
+  dont:
+    do: "Do not cut the bite. Do not suck it. No ice. No tourniquet. No tight bandage."
+    then: wash
+  wash:
+    do: "Rinse the bite with clean water if you have it and cover it with a clean dry cloth. Say done."
+    next: see
+  see:
+    look: "Show me the bite. Hold it up to the camera."
+    question: "What does the area around the bite look like?"
+    pick: "Is it swollen or discolored, or are there only small marks?"
+    unsure: mark
+    choices:
+      swollen:
+        means: "swelling, bruising, or discoloration"
+        words: [swollen, swelling, bruised, bruising, purple, red, puffy, discolored, bigger]
+        goto: mark
+      marks:
+        means: "only small puncture marks or scratches"
+        words: [marks, holes, dots, puncture, punctures, scratch, scratches]
+        goto: mark_watch
+  mark:
+    do: "Venom is likely acting. Draw a line at the edge of the swelling with a pen. I am logging the time. Say done."
+    log: "Swelling present. Edge marked on the skin"
+    next: symptoms
+  mark_watch:
+    do: "It may be a dry bite, but treat it as venomous. Circle the bite with a pen so you can see if swelling spreads. Say done."
+    log: "No swelling yet. Bite circled"
+    next: symptoms
+  symptoms:
+    ask: "Any trouble breathing, drooping eyelids, vomiting, or feeling faint?"
+    yes: severe
+    no: evac
+    unsure: severe
+  severe:
+    do: "That is serious. Lay them on their side and watch the breathing. Tell me at once if they stop breathing."
+    log: "Whole body symptoms after the bite"
+    then: evac
+  evac:
+    do: "Do not wait for symptoms. This needs antivenom. Get help to come to you, or start satellite S O S. If you must move, go slowly with the limb supported."
+    log: "Evacuation advised"
+    then: finish
+  finish:
+    end: "Snake bite steps complete. Check the swelling against your pen mark every fifteen minutes. Say report for the handoff note."
+  animal_wash:
+    do: "Wash the bite with soap and running water for fifteen minutes. I am timing it. Say done when the water is on it."
+    timer: 900
+    log: "Animal bite, washing with soap and water"
+    next: animal_bleed
+  animal_bleed:
+    ask: "Is it bleeding a lot?"
+    yes: "@bleeding"
+    no: animal_cover
+    unsure: animal_cover
+  animal_cover:
+    do: "After washing, cover it with a clean dressing. Say done."
+    log: "Bite covered"
+    next: animal_end
+  animal_end:
+    end: "An animal bite needs a doctor within a day, because of rabies and tetanus. Say report for the handoff note."

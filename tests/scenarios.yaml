@@ -1,0 +1,402 @@
+# Whole calls, written the way speech-to-text hears a stressed person.
+# Keys are explained at the top of scenarios.py.
+
+# ---------- mild versions: must take the mild exit and never reach the heavy steps
+- name: mild / paper cut on a finger
+  lines: ["i cut my finger on a can lid and its bleeding a little", "no its just a little bit", "its small", "done"]
+  protocols: [bleeding]
+  visit: [minor_kind, small_clean]
+  never: [press, tq_place, tq_tight, pack, shock_do]
+  final: small_end
+
+- name: mild / vague im bleeding turns out minor but deep
+  lines: ["im bleeding", "not really its just kind of dripping", "its pretty deep actually", "okay im pressing", "yeah it stopped", "done"]
+  protocols: [bleeding]
+  visit: [heavy, minor_kind, minor_press]
+  never: [tq_place, tq_tight, pack]
+  final: minor_end
+
+- name: mild / nosebleed
+  lines: ["my nose wont stop bleeding", "okay im pinching it", "yeah it stopped"]
+  protocols: [bleeding]
+  visit: [nose, nose_check]
+  never: [press, tq_place, heavy]
+  final: nose_end
+
+- name: mild / small kitchen burn
+  lines: ["i burned my forearm on the camp stove", "no", "the stove", "okay the waters on it", "done", "its just red no blisters", "no its like the size of a coin", "done"]
+  protocols: [burn]
+  visit: [cool, cover_small]
+  never: [serious, airway, deep, chem]
+  final: small_end
+
+- name: mild / rolled ankle is a sprain
+  lines: ["i rolled my ankle on a root and it really hurts", "no nothing like that", "no", "yeah i can stand on it a little", "done", "done"]
+  protocols: [fracture]
+  visit: [usable, sprain, sprain_wrap]
+  never: [splint, spine, open]
+  final: sprain_end
+
+- name: mild / bee sting with only local swelling
+  lines: ["i got stung by a bee and my hand is swollen and itchy", "no im breathing fine", "done", "yeah its about the same"]
+  protocols: [allergic]
+  visit: [mild, watch]
+  never: [epi_use, epi_have]
+  final: mild_end
+
+- name: mild / fainted and woke up
+  lines: ["my friend just fainted but shes awake now", "yeah shes making sense", "done"]
+  protocols: [unresponsive]
+  visit: [awake, faint]
+  never: [cpr_position, cpr]
+  final: faint_end
+
+- name: mild / choking but coughing
+  lines: ["hes choking on a piece of hot dog but hes coughing", "yeah hes coughing really hard", "yeah it came out"]
+  protocols: [choking]
+  visit: [encourage]
+  never: [blows, thrusts, baby_blows]
+  final: clear_mild
+
+- name: mild / cold and shivering but fine
+  lines: ["my friend fell in the creek and hes shivering like crazy", "okay were in the tent", "yeah hes soaked", "done", "done", "yeah hes shivering a lot but talking fine", "done"]
+  protocols: [hypothermia]
+  visit: [strip, wrap, mild]
+  never: [severe, evac]
+  final: mild_end
+
+- name: mild / overheated on a hike
+  lines: ["ive been hiking all day in the sun and im dizzy and nauseous", "okay im in the shade", "no im just really tired", "done"]
+  protocols: [heat]
+  visit: [exhaustion]
+  never: [stroke, stroke_help]
+  final: mild_end
+
+- name: mild / dog bite
+  lines: ["a stray dog bit my hand", "okay its under the water", "no not much", "done"]
+  protocols: [snakebite]
+  visit: [animal_wash, animal_cover]
+  never: [away, mark, evac]
+  final: animal_end
+
+# ---------- severe versions
+- name: severe / hatchet to the thigh, tourniquet
+  lines: ["my buddy slipped with the hatchet and his leg is cut open theres blood everywhere", "yeah its pouring out", "okay im pressing with my shirt", "no nothing in it", "its his thigh just above the knee", "no its still soaking through", "i have a belt and a bandana", "what if it hurts him too much", "okay its on", "the bleeding stopped", "yeah hes pale and shaky", "done"]
+  protocols: [bleeding]
+  visit: [press, tq_place, tq_tight, shock_do]
+  never: [minor_kind, pack]
+  final: finish
+
+- name: severe / bleeding with nothing to make a tourniquet
+  lines: ["she fell on a broken bottle and her forearm is gushing", "yes", "im pressing", "no", "her forearm", "no it keeps coming", "we dont have anything like that", "done", "no she seems okay"]
+  protocols: [bleeding]
+  visit: [press_more]
+  never: [tq_place, tq_tight]
+  final: finish
+
+- name: severe / groin wound gets packed
+  lines: ["he got gored in the groin and its pouring blood", "yes", "im pressing", "no", "its his groin", "done", "i cant tell"]
+  protocols: [bleeding]
+  visit: [pack, shock_do]
+  never: [tq_place, body_press]
+
+- name: severe / neck wound is pressure only
+  lines: ["shes cut on the side of her neck and its bleeding fast", "yeah", "pressing", "no", "side of her neck", "done"]
+  protocols: [bleeding]
+  visit: [body_press]
+  never: [tq_place, pack]
+
+- name: severe / glass stuck in the wound
+  lines: ["he fell through a window and his arm is bleeding really bad", "yes its spurting", "okay", "theres a big piece of glass still in there", "done", "his arm"]
+  protocols: [bleeding]
+  visit: [object_in, slowing]
+
+- name: severe / stove flare up in the face
+  lines: ["the camp stove flared up right in her face", "no its out", "fire from the stove", "okay waters on it", "done", "its blistering", "its her whole face", "yeah theres soot around her nose and shes coughing", "done"]
+  protocols: [burn]
+  visit: [cool, blister, smoke, airway, cover]
+  never: [cover_small, chem]
+  final: finish
+
+- name: severe / chemical burn
+  lines: ["drain cleaner splashed all over his arm and its burning", "no", "it was drain cleaner", "okay the water is running"]
+  protocols: [burn]
+  visit: [chem]
+  never: [cool]
+  final: size
+
+- name: severe / electric shock and not moving
+  lines: ["he grabbed a live wire and got shocked his hand is burned", "no", "electricity", "okay the power is off", "no hes not moving"]
+  protocols: [burn, unresponsive]
+  visit: [elec_safe]
+
+- name: severe / wrist bent the wrong way
+  lines: ["she fell off the trail and landed on her wrist", "no", "no", "no she cant move it at all", "its bent the wrong way", "alright its tied on", "yeah theyre warm and she can feel me"]
+  protocols: [fracture]
+  visit: [still, splint, cold]
+  never: [sprain, spine]
+  final: finish
+
+- name: severe / bone sticking out
+  lines: ["he crashed his bike and theres bone poking out of his shin", "no", "yeah i can see the bone", "done"]
+  protocols: [fracture]
+  visit: [open, splint]
+  never: [sprain]
+
+- name: severe / fall from a ledge with neck pain
+  lines: ["he fell like twenty feet off a ledge and his leg looks broken", "yeah he fell far and he says his neck hurts"]
+  protocols: [fracture]
+  visit: [spine]
+  never: [splint, sprain]
+  final: finish
+
+- name: severe / nothing to splint with
+  lines: ["i think i broke my arm i heard it snap", "no", "no", "no i cant move it", "its swollen and bruised", "i dont have anything to make a splint with", "done"]
+  protocols: [fracture]
+  visit: [splint, no_splint, circulation]
+
+- name: severe / rattlesnake bite
+  lines: ["a rattlesnake just bit me on the calf", "okay were clear of it", "im sitting down", "done", "done", "its swollen and turning purple", "done", "no i feel okay it just hurts"]
+  protocols: [snakebite]
+  visit: [away, still, mark, evac]
+  never: [what, animal_wash, severe]
+  final: finish
+
+- name: severe / anaphylaxis with an epipen
+  lines: ["she ate trail mix with peanuts and now her throat is closing", "yeah shes wheezing and her tongue is swollen", "yeah she has an epipen in her bag", "where do i stick it", "its in", "the breathing shes still gasping", "done"]
+  protocols: [allergic]
+  visit: [epi_use, sit, second]
+  never: [mild, no_epi]
+  final: finish
+
+- name: severe / anaphylaxis and nobody has an injector
+  lines: ["a wasp stung him and he cant breathe right hes allergic", "yes", "no nobody has one", "no hes breathing a bit better but feels faint", "done"]
+  protocols: [allergic]
+  visit: [no_epi, flat]
+  never: [epi_use, mild]
+
+- name: severe / collapsed, cpr, then breathing again
+  lines: ["my dad just collapsed and he isnt waking up", "nothing hes not moving", "no i dont see his chest moving", "done", "im pushing", "one two three four", "he just coughed hes breathing", "yes hes breathing on his own", "done"]
+  protocols: [unresponsive]
+  visit: [cpr_position, aed, cpr, cpr_keep, revived, recovery]
+  final: watch
+
+- name: severe / cpr chatter must never stop compressions
+  lines: ["shes not breathing i dont think shes breathing", "no", "no", "done", "okay im doing it", "is this right", "im so scared", "shes kind of gasping", "still not breathing", "i dont know"]
+  protocols: [unresponsive]
+  visit: [cpr, gasp]
+  never: [recovery, faint, watch, revived]
+  final: cpr_keep
+  never_says: ["Pick one", "We will play it safe"]
+
+- name: severe / cpr and the caller is exhausted
+  lines: ["he just dropped i cant find a pulse", "no", "no hes not", "done", "pushing", "my arms are giving out"]
+  protocols: [unresponsive]
+  visit: [swap]
+  final: cpr_keep
+
+- name: severe / adult choking, back blows then thrusts
+  lines: ["hes choking on a piece of jerky he cant talk", "no he cant make a sound", "no hes a grown man", "done", "no its still stuck", "done", "yes its out hes breathing"]
+  protocols: [choking]
+  visit: [blows, thrusts]
+  never: [baby_blows, baby_thrusts, encourage]
+  final: clear
+
+- name: severe / choking baby never gets belly thrusts
+  lines: ["my baby is choking she cant breathe", "no", "yes shes six months old", "done", "no", "done", "yes shes crying now"]
+  protocols: [choking]
+  visit: [baby_blows, baby_thrusts]
+  never: [thrusts, blows]
+  final: clear
+
+- name: severe / choking then goes limp
+  lines: ["shes choking on a marshmallow and turning blue", "no", "no shes eight", "done", "no", "done", "no", "she just went limp"]
+  protocols: [choking, unresponsive]
+  visit: [thrusts]
+
+- name: severe / hypothermia, stopped shivering
+  lines: ["she was lost in the snow overnight shes freezing and really confused", "okay were inside the tent", "yes", "done", "done", "no shes mumbling and she stopped shivering", "done"]
+  protocols: [hypothermia]
+  visit: [severe, evac]
+  never: [mild]
+  final: finish
+
+- name: severe / heat stroke
+  lines: ["hes burning up his skin is hot and dry and hes not making sense its so hot out", "okay hes in the shade", "yeah hes confused and slurring", "okay hes in the creek"]
+  protocols: [heat]
+  visit: [stroke, stroke_help]
+  never: [exhaustion]
+  final: finish
+
+# ---------- vague openers
+- name: vague / i hurt my arm
+  lines: ["i hurt my arm", "i fell on it and now it hurts to move it", "no my neck is fine i just tripped"]
+  protocols: [fracture]
+  never: [spine]
+  final: bone
+
+- name: vague / something bit me
+  lines: ["something bit me in the tall grass", "i didnt see what it was", "okay im sitting"]
+  first_in: [snakebite]
+  visit: [snakebite.what, snakebite.unseen, snakebite.still]
+  never: [snakebite.animal_wash]
+
+- name: vague / i dont feel good
+  lines: ["i dont feel good", "i feel dizzy and hot weve been out in the sun for hours"]
+  protocols: [heat]
+  says: ["Tell me what happened"]
+
+- name: vague / help help
+  lines: ["oh god oh god please help us", "theres blood all over his arm he cut it on the saw"]
+  protocols: [bleeding]
+  says: ["Tell me what happened"]
+
+# ---------- off-script replies
+- name: offscript / i dont know never loops
+  lines: ["theres blood on his leg from a cut", "i dont know", "um", "wait", "okay im pressing", "i dont know", "i dont know"]
+  protocols: [bleeding]
+  visit: [press, where, body_press]
+  says: ["We will play it safe", "I am here"]
+
+- name: offscript / junk replies do not loop forever
+  lines: ["i burned my hand on the grill", "what", "banana", "banana", "banana", "banana", "banana", "banana"]
+  protocols: [burn]
+  visit: [stop, cause, cool]
+  never_says: ["Pick one"]
+
+- name: offscript / contradicts himself
+  lines: ["i cut my hand open with my pocket knife", "yes i mean no its not that bad its just oozing"]
+  protocols: [bleeding]
+  visit: [minor_kind]
+  never: [press]
+
+- name: offscript / answers a different question
+  lines: ["he cut his arm really bad and its pouring", "yes", "im pressing", "its on his arm", "no"]
+  protocols: [bleeding]
+  visit: [object, where]
+
+- name: offscript / go back
+  lines: ["i got stung by a wasp on my neck", "no", "go back", "actually yes im wheezing now"]
+  protocols: [allergic]
+  visit: [mild, epi_have]
+  final: epi_have
+
+- name: offscript / say that again uses the same words
+  lines: ["a copperhead bit my hand", "say that again"]
+  protocols: [snakebite]
+  final: away
+
+- name: offscript / question the notes do not cover
+  lines: ["i spilled boiling water on my leg", "no", "boiling water", "can i put toothpaste on it"]
+  protocols: [burn]
+  final: cool
+
+- name: offscript / mild cut suddenly gets worse
+  lines: ["i cut my leg a bit", "no", "its small", "wait its gushing now its everywhere"]
+  protocols: [bleeding]
+  visit: [small_clean, press]
+  final: press
+
+- name: offscript / thanks after the steps are done
+  lines: ["i cut my finger its bleeding a little", "no", "small", "done", "okay thank you", "thanks"]
+  protocols: [bleeding]
+  final: small_end
+  never_says: ["I need one thing", "Tell me what happened"]
+
+# ---------- escalation, de-escalation, two problems
+- name: switch / bleeding, passes out, wakes, back to the bleeding
+  lines: ["he cut his leg with the chainsaw its pouring", "yes", "pressing", "no", "his leg", "no its still coming", "wait hes passed out", "yeah he woke up", "yes hes talking", "done"]
+  protocols: [bleeding, unresponsive, bleeding]
+  says: ["That comes first", "Now back to the bleeding"]
+  never_says: ["Tell me what else is wrong"]
+  final: bleeding.tq_have
+
+- name: switch / snake bite then stops breathing
+  lines: ["he got bit by a snake on his ankle", "okay were away", "hes sitting", "done", "done", "its really swollen", "done", "hes not breathing"]
+  protocols: [snakebite, unresponsive]
+  final: unresponsive.respond
+
+- name: switch / smaller problem waits its turn
+  lines: ["her arm is cut and bleeding a lot", "yes", "also i think her ankle is broken", "okay im pressing"]
+  protocols: [bleeding]
+  says: ["Noted"]
+  never_protocols: [fracture]
+  final: object
+
+- name: switch / two problems in the opening line
+  lines: ["she fell and her ankle is bent sideways and her arm is gushing blood", "yes", "pressing", "no", "her arm", "yes its slowing", "no she seems okay"]
+  protocols: [bleeding, fracture]
+  says: ["Now the other problem"]
+
+- name: switch / bee sting gets worse while watching
+  lines: ["a bee stung my son on the arm its red and puffy", "no hes fine", "done", "no his lips are swelling up now"]
+  protocols: [allergic]
+  visit: [mild, epi_have]
+
+- name: switch / pulled from the water not breathing
+  lines: ["we pulled him out of the lake and hes not moving", "no", "no hes not breathing", "done", "im pushing"]
+  protocols: [unresponsive]
+  visit: [cpr]
+
+# ---------- no protocol: fail safe, never force a wrong tree
+- name: noproto / chest pain
+  lines: ["my dad has crushing chest pain and his left arm hurts", "yeah hes awake", "yeah hes breathing okay", "done"]
+  protocols: [general]
+  says: ["I do not have a protocol for that"]
+  final: finish
+
+- name: noproto / stroke signs
+  lines: ["her face is drooping on one side and she cant lift her arm"]
+  protocols: [general]
+  says: ["I do not have a protocol for that"]
+
+- name: noproto / seizure
+  lines: ["hes having a seizure hes shaking all over"]
+  first_in: [general]
+
+- name: noproto / head injury
+  lines: ["he hit his head on a rock and has a big bump and a bad headache"]
+  first_in: [general, fracture]
+  never_protocols: [bleeding, heat, unresponsive]
+
+- name: noproto / poisoning
+  lines: ["my kid ate some berries off a bush and now hes throwing up"]
+  protocols: [general]
+
+- name: noproto / tick
+  lines: ["i found a tick stuck in my leg"]
+  protocols: [general]
+  never_protocols: [snakebite, allergic]
+
+- name: noproto / blister
+  lines: ["ive got a huge blister on my heel from my boots"]
+  protocols: [general]
+  never_protocols: [burn]
+
+- name: noproto / altitude sickness
+  lines: ["we climbed to twelve thousand feet and she has a pounding headache and keeps throwing up"]
+  protocols: [general]
+  never_protocols: [heat]
+
+- name: noproto / near drowning but awake
+  lines: ["we pulled her out of the river shes coughing up water but shes awake and talking"]
+  first_in: [general]
+
+- name: noproto / general turns into cpr
+  lines: ["my grandpa has really bad chest pain", "no he just slumped over he wont answer me"]
+  protocols: [general, unresponsive]
+
+# ---------- not an emergency
+- name: none / greetings and tests
+  lines: ["hello", "is this thing on", "what can you do"]
+  none: true
+  says: ["Tell me what happened"]
+
+- name: none / joke
+  lines: ["my pizza is cold and im sad", "lol just kidding"]
+  none: true
+
+- name: none / filler only
+  lines: ["um", "uh", "hmm"]
+  none: true
+  never_says: ["I need one thing"]

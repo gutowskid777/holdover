@@ -1,0 +1,46 @@
+id: heat
+title: Heat illness
+short: the overheating
+priority: 2
+when: "someone overheated in the sun or after hard effort: dizzy, cramping, nauseous, headache, very hot skin, confused, or fainted from heat"
+facts:
+  - "Confusion or passing out in the heat means heat stroke. Cool first, fast."
+  - "Cold water on the whole body cools fastest. A stream or a lake works if you hold them safely."
+  - "Ice or cold packs go on the neck, armpits, and groin."
+  - "Never give a drink to someone who is confused or not fully awake."
+  - "Sips of water or a sports drink are fine if they are fully awake."
+  - "No fever medicine like aspirin or acetaminophen. It does not help."
+  - "Stop cooling when they start shivering or act like themselves again."
+  - "For a cramp, stretch the muscle gently and sip a salty drink."
+start: shade
+nodes:
+  shade:
+    do: "Get into shade and lie down. Loosen or take off extra clothing. Say done."
+    log: "Moved to shade"
+    cant: mind
+    next: mind
+  mind:
+    ask: "Any confusion, slurred words, strange behavior, or passing out?"
+    yes: stroke
+    no: exhaustion
+    unsure: stroke
+  stroke:
+    do: "This is heat stroke. Cool them as fast as you can. Put them in cold water up to the neck and hold them, for about fifteen minutes or until they make sense again. If there is no deep water, soak them and fan hard. Say done when cooling has started."
+    log: "Heat stroke. Rapid cooling started"
+    next: stroke_help
+  stroke_help:
+    do: "Send for help or start satellite S O S. Do not give them anything to drink. Stop cooling when they shiver or make sense again."
+    log: "Evacuation advised"
+    then: finish
+  exhaustion:
+    do: "That sounds like heat exhaustion. Put cool wet cloths on the skin and fan. Take small sips of water or a sports drink. Say done."
+    log: "Heat exhaustion. Cooling and fluids"
+    next: recheck
+  recheck:
+    do: "Keep resting in the shade. I am timing thirty minutes. If it is not better by then, or confusion starts, it needs evacuation."
+    timer: 1800
+    then: mild_end
+  mild_end:
+    end: "No more hard effort today. Keep sipping water. Tell me at once if confusion starts or the skin gets hot and dry."
+  finish:
+    end: "Heat steps complete. Say report for the handoff note, or tell me if anything changes."

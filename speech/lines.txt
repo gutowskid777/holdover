@@ -1,0 +1,318 @@
+Is there trouble breathing, a swollen tongue or throat, or feeling faint?
+Yes or no. Is there trouble breathing, a swollen tongue or throat, or feeling faint?
+Is there an epinephrine injector, like an Epi Pen?
+Yes or no. Is there an epinephrine injector, like an Epi Pen?
+Use it now. Pull off the safety cap. Press the tip hard into the outer thigh. Through clothing is fine. Hold it for a slow count of three. Say done when it is in.
+Ask everyone nearby if they carry one. If there is an antihistamine and they can swallow, give it now.
+Which is worse right now: the breathing, or feeling faint?
+The breathing, or feeling faint?
+Sit them up, leaning slightly forward.
+Lay them flat and raise their legs.
+Remove the cause if you can. Scrape out a stinger with a card, or stop eating the food. Say done.
+Send for help or start satellite S O S. I am timing five minutes. If they are not better by then and you have a second injector, use it in the other thigh.
+That sounds mild for now. If there is a stinger, scrape it out with a card. Wash the spot and put something cold on it, wrapped in cloth. Say done.
+Take an antihistamine if you have one. I will check on the breathing again.
+Is it staying mild? Say no if breathing gets hard, the face or lips swell, or hives spread.
+Is it staying mild?
+Yes or no. Is it staying mild?
+Keep watching for an hour. Tell me at once if breathing gets hard or the face swells.
+Allergy steps complete. A hospital is still needed, even if they feel better. Say report for the handoff note.
+The injector goes into the outer thigh. It works through clothing.
+Hold the injector in place for a slow count of three. If the label says longer, follow the label.
+A second injector can be used after five minutes if they are not better.
+Epinephrine wears off. A hospital is still needed even if they feel fine.
+Antihistamine pills help hives but do not stop a severe reaction.
+Scrape a stinger out sideways with a card or a fingernail. Do not squeeze it.
+If they feel faint, lay them flat. Do not let them stand or walk.
+Something cold on a sting, wrapped in cloth, eases pain and swelling.
+Now back to the allergic reaction.
+Is the blood spurting, pouring, or soaking through fast?
+Yes or no. Is the blood spurting, pouring, or soaking through fast?
+Press hard on the wound right now. Use a cloth, a shirt, or your bare hand. Say done when you are pressing.
+Is something stuck in the wound, like a knife, a stick, or glass?
+Yes or no. Is something stuck in the wound, like a knife, a stick, or glass?
+Do not pull it out. Press firmly around it, on both sides. Say done.
+Where is the wound?
+Is it on an arm or a leg, or is it on the body?
+Keep pressing. Is the bleeding slowing down?
+Is the bleeding slowing down?
+Yes or no. Is the bleeding slowing down?
+Do you have a tourniquet, or a belt, a strap, or a strip of cloth at least an inch wide?
+Yes or no. Do you have a tourniquet, or a belt, a strap, or a strip of cloth at least an inch wide?
+Wrap it around the limb two to three inches above the wound, between the wound and the body. Never on a knee or elbow. Say done when it is on.
+Now tighten it until the bleeding stops. Tie a stick into the knot and twist. It will hurt. That is normal. Say done when the bleeding has stopped.
+Do not loosen it for any reason. I have logged the time it went on.
+Then press harder. Both hands, lean your body weight in. If the cloth soaks through, add more on top. Do not lift it. Say done.
+A tourniquet cannot go there. Push clean cloth into the wound until it is full. Then press on it hard with both hands. Do not let up. Say done.
+A tourniquet cannot go there. Press hard with both hands and do not let up. If the cloth soaks through, add more on top. Never lift it to look. Say done.
+Keep the pressure on. If the cloth soaks through, add more on top. Do not lift it to look.
+Any pale, cold, sweaty skin, or confusion?
+Yes or no. Any pale, cold, sweaty skin, or confusion?
+That is shock. Lay them flat and cover them to keep them warm. Give nothing to eat or drink. Say done.
+Send someone for help now, or start satellite S O S if any phone has it. Keep the pressure on until help takes over.
+Bleeding steps complete. Say report for the handoff note, or tell me if anything changes.
+Is it a small cut or scrape, or is it deep or gaping open?
+Small, or deep?
+Good. Rinse it with clean water. Then press on it with a clean cloth for a few minutes. Say done.
+Cover it with a clean dressing and keep it dry. Watch for redness, swelling, or pus over the next days.
+Press on it with a clean cloth for ten minutes without lifting. I am timing it. Say done when the bleeding has stopped.
+Rinse it with clean water and cover it with a clean dressing. Say done.
+A deep cut may need stitches. Get it seen today if you can. Tell me if the bleeding starts again.
+Sit up and lean forward. Pinch the soft part of the nose shut and breathe through the mouth. Hold it for ten minutes without letting go. I am timing it. Say done when you are pinching.
+After the ten minutes, has it stopped?
+Yes or no. After the ten minutes, has it stopped?
+Pinch for ten more minutes. If it is still bleeding after that, it needs a doctor.
+Do not blow or pick the nose for the rest of the day. Tell me if anything changes.
+If there is no cloth, press with a bare hand.
+Never remove a soaked cloth. Add more on top.
+A tourniquet goes two to three inches above the wound, never on a knee or elbow.
+A tourniquet is supposed to hurt. Never loosen it once it is on.
+Never pull out an object stuck in a wound.
+A belt, a strap, or a wide strip of cloth can work as a tourniquet if it is twisted tight.
+Raising the limb is fine, but pressure matters more.
+Give nothing to eat or drink if the bleeding is heavy.
+A cut that gapes open or is deeper than the skin may need stitches.
+For a nosebleed, lean forward, never tip the head back.
+Now back to the bleeding.
+Is anything still burning, or still touching the heat?
+Yes or no. Is anything still burning, or still touching the heat?
+Get away from the heat. If clothing is on fire: stop, drop, and roll, or smother it with a blanket. Say done when it is out.
+What caused the burn?
+Was it heat, a chemical, or electricity?
+Brush off any dry chemical. Then flush with a lot of water for twenty minutes, and take off clothing the chemical touched. I am timing it. Say done when the water is running.
+Do not touch them until the power is off or they are clear of the wire. Say done when it is safe.
+Are they awake and breathing normally?
+Yes or no. Are they awake and breathing normally?
+Cool the burn with cool running water, or pour clean cool water over it, for twenty minutes. Not ice. I am timing it. Say done when the water is on it.
+While it cools, take off rings, watches, and tight clothing near the burn before it swells. Leave anything that is stuck to the skin. Say done.
+Show me the burn. Hold it up to the camera.
+How does the burned skin look?
+Is the skin red, blistered, or white and leathery?
+I can't make it out. Tell me instead. How does the burned skin look?
+I see it: red skin with no blisters.
+I see it: blisters, or wet and raw skin.
+I see it: white, leathery, brown, or charred skin.
+That is a surface burn.
+That is a deeper burn. Do not pop the blisters.
+That is a deep burn. It needs a hospital.
+Is the burn bigger than the palm of the hand, or on the face, hands, feet, groin, or over a joint?
+Yes or no. Is the burn bigger than the palm of the hand, or on the face, hands, feet, groin, or over a joint?
+Any burns to the face, soot around the nose or mouth, or trouble breathing?
+Yes or no. Any burns to the face, soot around the nose or mouth, or trouble breathing?
+The airway can swell. Sit them upright. This needs evacuation now. Send someone for help, or start satellite S O S.
+This one needs a doctor. Send someone for help, or start satellite S O S.
+After the twenty minutes of cooling, cover the burn loosely with plastic wrap or a clean cloth that is not fluffy. Say done.
+Burn steps complete. Keep the rest of the body warm. Say report for the handoff note.
+Finish the twenty minutes of cooling. Then cover it loosely with a clean cloth that is not fluffy. Say done.
+A small burn heals on its own. Leave any blisters alone, and watch for redness spreading or pus.
+Nothing on the burn before it is cooled. No ice, no butter.
+Never pop blisters.
+Leave anything that is stuck to the skin.
+If water is short, use any clean cool liquid, or a cool wet cloth that you keep wetting again.
+Cool the burn for twenty minutes, even if it already feels better.
+Plastic wrap or a clean cloth that is not fluffy is a good cover. Lay it on, do not wrap it tight.
+Keep the rest of the person warm while you cool the burn.
+Burns to the face with soot around the nose or mouth can swell the airway. That needs evacuation.
+Now back to the burn.
+Can they cough, speak, or breathe at all?
+Yes or no. Can they cough, speak, or breathe at all?
+Tell them to keep coughing hard. Do not hit their back yet. Stay right with them.
+Did it come out?
+Yes or no. Did it come out?
+Good. Sit down and breathe. If the cough or a sore throat does not settle, see a doctor. Tell me if anything changes.
+Is it a baby under one year old?
+Yes or no. Is it a baby under one year old?
+Stand behind and slightly to the side. Lean them forward. Give five hard blows between the shoulder blades with the heel of your hand. Say done.
+Stand behind them. Make a fist just above the belly button, grab it with your other hand, and pull sharply in and up, five times. Say done.
+Is the airway clear now?
+Yes or no. Is the airway clear now?
+Are they still awake?
+Yes or no. Are they still awake?
+Good. Sit them down. If you used thrusts, they should see a doctor after. Tell me if anything changes.
+Lay the baby face down along your forearm, head lower than the chest, and hold the jaw. Give five firm blows between the shoulder blades. Say done.
+Turn the baby face up. Put two fingers on the center of the chest, just below the nipples. Give five quick pushes. Never squeeze the belly. Say done.
+Is the baby still awake?
+Yes or no. Is the baby still awake?
+If they can cough or speak, let them cough. Do not hit their back.
+Back blows go between the shoulder blades with the heel of the hand.
+Thrusts go just above the belly button, pulling in and up.
+For a pregnant or very large person, do the thrusts on the chest instead.
+A baby under one year never gets belly thrusts. Use back blows and chest thrusts.
+Never sweep a finger blindly in the mouth.
+If they pass out, start C P R.
+If you are alone and choking, push your belly hard onto the back of a chair or a log.
+Now back to the choking.
+Is there neck or back pain, or was it a fall from high up, like off a ledge or a roof?
+Yes or no. Is there neck or back pain, or was it a fall from high up, like off a ledge or a roof?
+Do not move them. Keep the head and neck still, in the position you found them. Hold the head steady with your hands. Send someone for help or start satellite S O S.
+Is bone sticking out, or is there an open wound over the injury?
+Yes or no. Is bone sticking out, or is there an open wound over the injury?
+Do not push the bone back. Cover the wound with a clean cloth and press around it, not on the bone. Say done.
+Can they move it, and put a little weight or grip on it?
+Yes or no. Can they move it, and put a little weight or grip on it?
+That sounds like a sprain. Rest it. Put something cold on it, wrapped in cloth, for twenty minutes. I am timing it. Say done.
+Wrap it snugly with a bandage or a strip of cloth, not tight, and raise it. Say done.
+Go easy on it. If it cannot take weight tomorrow, or it goes numb or looks bent, treat it as a break. Tell me if anything changes.
+Show me the injury. Hold it up to the camera.
+How does the injured limb look?
+Is it bent out of shape, or just swollen?
+I can't make it out. Tell me instead. How does the injured limb look?
+I see it: bent, twisted, or out of shape.
+I see it: swollen or bruised but straight.
+It may be a bad sprain, but treat it as a break until an X ray says otherwise.
+Do not try to straighten it. Keep the limb exactly as it is.
+Make a splint. Lay a stick, a pole, or a rolled jacket along the limb. Tie it above and below the injury so the joints on both sides cannot move. Snug, not tight. Say done when it is tied.
+Then hold it still another way. Strap an arm to the chest with a shirt, or tie a leg to the other leg with padding between. Say done.
+Check past the injury. Are the fingers or toes warm, pink, and able to feel your touch?
+Are the fingers or toes warm, pink, and able to feel your touch?
+Yes or no. Are the fingers or toes warm, pink, and able to feel your touch?
+Loosen the ties a little. If they stay cold, blue, or numb, this is urgent and needs evacuation now. Say done.
+Put something cold on it, wrapped in cloth, for twenty minutes. Raise the limb if that does not hurt. I am timing it.
+It needs an X ray. No weight on it. Say report for the handoff note, or tell me if anything changes.
+Never try to straighten a broken limb or push a bone back in.
+A splint must hold the joint above and the joint below the injury still.
+A splint can be a stick, a trekking pole, a rolled jacket, a sleeping pad, or the other leg.
+Ties should be snug but not tight enough to cut off blood flow.
+Cold goes on for twenty minutes at a time, wrapped in cloth, never straight on skin.
+Do not put weight on a limb that might be broken.
+An arm can be held in a sling made from a shirt or a jacket.
+A sprain needs rest, cold, a snug wrap, and to be raised.
+Now back to the injured limb.
+Get into shade and lie down. Loosen or take off extra clothing. Say done.
+Any confusion, slurred words, strange behavior, or passing out?
+Yes or no. Any confusion, slurred words, strange behavior, or passing out?
+This is heat stroke. Cool them as fast as you can. Put them in cold water up to the neck and hold them, for about fifteen minutes or until they make sense again. If there is no deep water, soak them and fan hard. Say done when cooling has started.
+Send for help or start satellite S O S. Do not give them anything to drink. Stop cooling when they shiver or make sense again.
+That sounds like heat exhaustion. Put cool wet cloths on the skin and fan. Take small sips of water or a sports drink. Say done.
+Keep resting in the shade. I am timing thirty minutes. If it is not better by then, or confusion starts, it needs evacuation.
+No more hard effort today. Keep sipping water. Tell me at once if confusion starts or the skin gets hot and dry.
+Heat steps complete. Say report for the handoff note, or tell me if anything changes.
+Confusion or passing out in the heat means heat stroke. Cool first, fast.
+Cold water on the whole body cools fastest. A stream or a lake works if you hold them safely.
+Ice or cold packs go on the neck, armpits, and groin.
+Never give a drink to someone who is confused or not fully awake.
+Sips of water or a sports drink are fine if they are fully awake.
+No fever medicine like aspirin or acetaminophen. It does not help.
+Stop cooling when they start shivering or act like themselves again.
+For a cramp, stretch the muscle gently and sip a salty drink.
+Now back to the overheating.
+Get out of the wind and wet. A tent, a car, or behind a rock. Say done when you are sheltered.
+Are the clothes wet?
+Yes or no. Are the clothes wet?
+Take the wet clothes off and put on anything dry. Say done.
+Put something between them and the ground. Then wrap them in dry layers or a sleeping bag, head covered. Say done.
+Are they still shivering and able to talk clearly?
+Yes or no. Are they still shivering and able to talk clearly?
+That is the milder stage. Give warm sweet drinks and food. Keep them wrapped and resting for about thirty minutes before they move on. I am timing it. Say done.
+Keep them dry and fed. If the shivering stops and they get drowsy or clumsy, tell me at once.
+This is severe. Keep them lying flat and handle them gently. Put warm bottles or heat packs on the armpits, the chest, and the back, with cloth between the heat and the skin. Give nothing by mouth. Say done.
+Send for help or start satellite S O S. Tell me at once if they stop breathing.
+Hypothermia steps complete. Keep them wrapped and keep checking on them. Say report for the handoff note.
+Wet clothes pull heat away. Get them off and replace them with anything dry.
+Insulate them from the ground with a pad, a pack, or branches.
+Warm packs go on the armpits, the chest, and the back, with cloth between the heat and the skin.
+Never rub their arms or legs and never give alcohol.
+Warm sweet drinks only if they are fully awake and can swallow.
+Handle a very cold person gently and keep them lying flat.
+When shivering stops and they get drowsy, it is getting worse, not better.
+No warm bath or shower for someone who is drowsy.
+Shivering is good. It makes heat. Let them shiver.
+Now back to the cold.
+What was it that bit: a snake, an animal, or an insect?
+A snake, an animal, or an insect?
+If you did not see it, we treat it as a snake bite.
+Move away from the snake. Do not try to catch it or kill it. Say done when you are clear.
+Sit down and keep still. Movement spreads venom. Rest the bitten limb in a comfortable position and do not move it. Say done.
+Take off rings, watches, and tight clothing near the bite before it swells. Say done.
+Do not cut the bite. Do not suck it. No ice. No tourniquet. No tight bandage.
+Rinse the bite with clean water if you have it and cover it with a clean dry cloth. Say done.
+Show me the bite. Hold it up to the camera.
+What does the area around the bite look like?
+Is it swollen or discolored, or are there only small marks?
+I can't make it out. Tell me instead. What does the area around the bite look like?
+I see it: swelling, bruising, or discoloration.
+I see it: only small puncture marks or scratches.
+Venom is likely acting. Draw a line at the edge of the swelling with a pen. I am logging the time. Say done.
+It may be a dry bite, but treat it as venomous. Circle the bite with a pen so you can see if swelling spreads. Say done.
+Any trouble breathing, drooping eyelids, vomiting, or feeling faint?
+Yes or no. Any trouble breathing, drooping eyelids, vomiting, or feeling faint?
+That is serious. Lay them on their side and watch the breathing. Tell me at once if they stop breathing.
+Do not wait for symptoms. This needs antivenom. Get help to come to you, or start satellite S O S. If you must move, go slowly with the limb supported.
+Snake bite steps complete. Check the swelling against your pen mark every fifteen minutes. Say report for the handoff note.
+Wash the bite with soap and running water for fifteen minutes. I am timing it. Say done when the water is on it.
+Is it bleeding a lot?
+Yes or no. Is it bleeding a lot?
+After washing, cover it with a clean dressing. Say done.
+An animal bite needs a doctor within a day, because of rabies and tetanus. Say report for the handoff note.
+Never cut a snake bite, suck it, ice it, or put a tourniquet or a pressure bandage on it.
+No alcohol, and no painkillers like aspirin or ibuprofen after a snake bite.
+Keeping still slows the spread of venom.
+Do not try to catch or kill the snake. A photo from a safe distance is enough.
+Keep the bitten limb still in a comfortable neutral position.
+The only real treatment for venom is antivenom at a hospital. Do not wait for symptoms.
+Swelling that spreads past your pen mark means venom is acting.
+An animal bite needs a doctor within a day, because of rabies and tetanus.
+Now back to the bite.
+Tap their shoulders hard and shout their name.
+Did they wake up, move, or make a sound?
+Yes or no. Did they wake up, move, or make a sound?
+Watch the chest for ten seconds. Are they breathing normally? Gasping does not count.
+Are they breathing normally?
+Yes or no. Are they breathing normally?
+Roll them onto their side, top knee bent, head tilted back so the airway stays open. Say done when they are on their side.
+Send someone for help, or start satellite S O S.
+Stay with them and watch the breathing. Tell me at once if it stops.
+We need to start C P R. I will help you. Lay them flat on their back on firm ground and kneel beside the chest. Say done.
+If anyone else is here, send them for help and for a defibrillator. You stay and push.
+Heel of one hand on the center of the chest, other hand on top, arms straight. Push hard and fast, two inches deep, to my beat. Do not stop. Tell me if they start breathing.
+Keep pushing on the chest. Tell me if they start breathing, or if you need to switch.
+Pick one: the caller is pushing, counting, or still doing compressions, or the person is gasping, gurgling, or taking odd breaths now and then, or the person started breathing normally, coughed, moved, or woke up, or the caller is tired, hurting, or wants to switch.
+Keep going. Hard and fast. Do not stop.
+Gasping is not breathing. Keep pushing.
+Stop and look for five seconds. Are they breathing normally, or moving on purpose?
+Are they breathing normally, or moving on purpose?
+Yes or no. Are they breathing normally, or moving on purpose?
+Switch with someone else in under five seconds. If you are alone, keep going as best you can.
+Are they fully awake and making sense now?
+Yes or no. Are they fully awake and making sense now?
+That sounds like a faint. Keep them lying flat and raise their legs. Loosen tight clothing. Stay down for a few minutes. Say done.
+Get up slowly. Check for injuries from the fall. If they faint again, or have chest pain or trouble breathing, they need a doctor. Tell me what else is wrong.
+Push in the center of the chest, about two inches deep, at about two pushes per second.
+Let the chest come all the way back up between pushes.
+If you are not trained in rescue breaths, hands only is fine. Do not stop pushing.
+If you are trained, give two breaths after every thirty pushes. Breaths matter most after drowning.
+Switch with another person every two minutes if you can.
+Cracking sounds from the ribs can happen. Keep going.
+If a defibrillator arrives, turn it on and follow its voice.
+After a faint, stay lying down for a few minutes and get up slowly.
+Now back to the person who collapsed.
+I do not have a protocol for that, and I will not guess. Here is what always helps.
+Are they awake and able to talk to you?
+Yes or no. Are they awake and able to talk to you?
+Are they breathing without a struggle?
+Yes or no. Are they breathing without a struggle?
+Sit them up, leaning slightly forward, and loosen tight clothing. Say done.
+Keep them still, in the position that is most comfortable. Cover them to keep them warm. Say done.
+Send someone for help, or start satellite S O S. Tell them exactly what you told me.
+Stay with them. Give nothing to eat or drink if they are drowsy or confused.
+That is all I can safely tell you. Say report for the handoff note. Tell me at once if they stop responding or stop breathing.
+I only give steps from checked first aid protocols. I do not have one for this, so I will not guess.
+Stay with them, keep them still and warm, and get help.
+Give nothing to eat or drink if they are drowsy or confused.
+If they stop responding or stop breathing, tell me and we start C P R.
+Now back to something else.
+I need one thing. Is it bleeding, a burn, a broken bone, a bite or a sting, an allergic reaction, choking, someone not responding, heat, or cold?
+Emergency line. I work with no signal. What is happening?
+Tell me what happened. Who is hurt, and how?
+I am still here. Tell me if anything changes.
+We will play it safe.
+Understood. That comes first.
+Noted. We will get to that next.
+Now the other problem.
+Okay. I am here.
+I don't have that. Stay on this step.
+Say done, or say you cannot.
+Hold it up to the camera and keep still.
+Here is the handoff note.
+Time is up.
+Tell me what is happening.

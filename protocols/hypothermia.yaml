@@ -1,0 +1,59 @@
+id: hypothermia
+title: Hypothermia
+short: the cold
+priority: 3
+when: "someone very cold, wet, shivering hard, clumsy, slurring words, or confused from cold"
+facts:
+  - "Wet clothes pull heat away. Get them off and replace them with anything dry."
+  - "Insulate them from the ground with a pad, a pack, or branches."
+  - "Warm packs go on the armpits, the chest, and the back, with cloth between the heat and the skin."
+  - "Never rub their arms or legs and never give alcohol."
+  - "Warm sweet drinks only if they are fully awake and can swallow."
+  - "Handle a very cold person gently and keep them lying flat."
+  - "When shivering stops and they get drowsy, it is getting worse, not better."
+  - "No warm bath or shower for someone who is drowsy."
+  - "Shivering is good. It makes heat. Let them shiver."
+start: shelter
+nodes:
+  shelter:
+    do: "Get out of the wind and wet. A tent, a car, or behind a rock. Say done when you are sheltered."
+    log: "Moved to shelter"
+    cant: wet
+    next: wet
+  wet:
+    ask: "Are the clothes wet?"
+    yes: strip
+    no: wrap
+    unsure: strip
+  strip:
+    do: "Take the wet clothes off and put on anything dry. Say done."
+    log: "Wet clothing removed"
+    cant: wrap
+    next: wrap
+  wrap:
+    do: "Put something between them and the ground. Then wrap them in dry layers or a sleeping bag, head covered. Say done."
+    log: "Insulated and wrapped"
+    next: level
+  level:
+    ask: "Are they still shivering and able to talk clearly?"
+    yes: mild
+    no: severe
+    unsure: severe
+  mild:
+    do: "That is the milder stage. Give warm sweet drinks and food. Keep them wrapped and resting for about thirty minutes before they move on. I am timing it. Say done."
+    timer: 1800
+    log: "Mild hypothermia. Wrapped, fed, resting"
+    next: mild_end
+  mild_end:
+    end: "Keep them dry and fed. If the shivering stops and they get drowsy or clumsy, tell me at once."
+  severe:
+    do: "This is severe. Keep them lying flat and handle them gently. Put warm bottles or heat packs on the armpits, the chest, and the back, with cloth between the heat and the skin. Give nothing by mouth. Say done."
+    log: "Severe hypothermia. Core warming started"
+    cant: evac
+    next: evac
+  evac:
+    do: "Send for help or start satellite S O S. Tell me at once if they stop breathing."
+    log: "Evacuation advised"
+    then: finish
+  finish:
+    end: "Hypothermia steps complete. Keep them wrapped and keep checking on them. Say report for the handoff note."

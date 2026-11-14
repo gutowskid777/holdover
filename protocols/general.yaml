@@ -1,0 +1,43 @@
+id: general
+title: Something else
+short: something else
+priority: 5
+when: "any OTHER real injury or illness not listed above. Examples: chest pain or heart attack; stroke signs like a drooping face, slurred speech, or one weak arm; a seizure; a hit to the head; poisoning or eating something bad; nearly drowned but awake; a tick; a blister from boots; altitude sickness; stomach pain; an eye injury; a fever"
+facts:
+  - "I only give steps from checked first aid protocols. I do not have one for this, so I will not guess."
+  - "Stay with them, keep them still and warm, and get help."
+  - "Give nothing to eat or drink if they are drowsy or confused."
+  - "If they stop responding or stop breathing, tell me and we start C P R."
+start: honest
+nodes:
+  honest:
+    do: "I do not have a protocol for that, and I will not guess. Here is what always helps."
+    log: "No matching protocol. Universal basics given"
+    then: awake
+  awake:
+    ask: "Are they awake and able to talk to you?"
+    yes: breathing
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  breathing:
+    ask: "Are they breathing without a struggle?"
+    yes: rest
+    no: sit
+    unsure: sit
+  sit:
+    do: "Sit them up, leaning slightly forward, and loosen tight clothing. Say done."
+    log: "Breathing with difficulty. Sat upright"
+    next: help
+  rest:
+    do: "Keep them still, in the position that is most comfortable. Cover them to keep them warm. Say done."
+    log: "Kept still and warm"
+    next: help
+  help:
+    do: "Send someone for help, or start satellite S O S. Tell them exactly what you told me."
+    log: "Evacuation advised"
+    then: stay
+  stay:
+    do: "Stay with them. Give nothing to eat or drink if they are drowsy or confused."
+    then: finish
+  finish:
+    end: "That is all I can safely tell you. Say report for the handoff note. Tell me at once if they stop responding or stop breathing."

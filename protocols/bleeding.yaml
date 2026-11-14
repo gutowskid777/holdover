@@ -1,0 +1,158 @@
+id: bleeding
+title: Bleeding
+short: the bleeding
+priority: 2
+when: "any cut, scrape, gash, stab, nosebleed, or wound that is bleeding, small or large"
+facts:
+  - "If there is no cloth, press with a bare hand."
+  - "Never remove a soaked cloth. Add more on top."
+  - "A tourniquet goes two to three inches above the wound, never on a knee or elbow."
+  - "A tourniquet is supposed to hurt. Never loosen it once it is on."
+  - "Never pull out an object stuck in a wound."
+  - "A belt, a strap, or a wide strip of cloth can work as a tourniquet if it is twisted tight."
+  - "Raising the limb is fine, but pressure matters more."
+  - "Give nothing to eat or drink if the bleeding is heavy."
+  - "A cut that gapes open or is deeper than the skin may need stitches."
+  - "For a nosebleed, lean forward, never tip the head back."
+entries:
+  - {words: [nose, nosebleed, nostril], goto: nose}
+start: heavy
+nodes:
+  heavy:
+    ask: "Is the blood spurting, pouring, or soaking through fast?"
+    yes: press
+    no: minor_kind
+    unsure: press
+  press:
+    do: "Press hard on the wound right now. Use a cloth, a shirt, or your bare hand. Say done when you are pressing."
+    log: "Direct pressure applied"
+    next: object
+  object:
+    ask: "Is something stuck in the wound, like a knife, a stick, or glass?"
+    yes_words: [glass, knife, blade, stick, branch, metal, nail, shard, splinter, hook, arrow, stuck, lodged, embedded]
+    no_words: [nothing, clean, clear, empty]
+    yes: object_in
+    no: where
+    unsure: where
+  object_in:
+    do: "Do not pull it out. Press firmly around it, on both sides. Say done."
+    log: "Embedded object left in place, pressure applied around it"
+    next: where
+  where:
+    ask: "Where is the wound?"
+    pick: "Is it on an arm or a leg, or is it on the body?"
+    unsure: body_press
+    choices:
+      limb:
+        means: "an arm or a leg"
+        words: [arm, forearm, wrist, hand, finger, thumb, elbow, bicep, leg, thigh, calf, shin, knee, ankle, foot, toe]
+        goto: slowing
+      junction:
+        means: "the groin, the armpit, or the shoulder"
+        words: [groin, armpit, shoulder, hip, buttock]
+        goto: pack
+      body:
+        means: "the head, neck, chest, back, or belly"
+        words: [head, scalp, forehead, face, neck, throat, chest, back, belly, stomach, abdomen, gut, ribs, side]
+        goto: body_press
+  slowing:
+    ask: "Keep pressing. Is the bleeding slowing down?"
+    yes: hold
+    no: tq_have
+    unsure: tq_have
+  tq_have:
+    ask: "Do you have a tourniquet, or a belt, a strap, or a strip of cloth at least an inch wide?"
+    yes: tq_place
+    no: press_more
+    unsure: press_more
+  tq_place:
+    do: "Wrap it around the limb two to three inches above the wound, between the wound and the body. Never on a knee or elbow. Say done when it is on."
+    cant: press_more
+    next: tq_tight
+  tq_tight:
+    do: "Now tighten it until the bleeding stops. Tie a stick into the knot and twist. It will hurt. That is normal. Say done when the bleeding has stopped."
+    log: "Tourniquet applied and tightened"
+    cant: press_more
+    next: tq_time
+  tq_time:
+    do: "Do not loosen it for any reason. I have logged the time it went on."
+    then: shock
+  press_more:
+    do: "Then press harder. Both hands, lean your body weight in. If the cloth soaks through, add more on top. Do not lift it. Say done."
+    log: "No tourniquet, two hand pressure"
+    next: shock
+  pack:
+    do: "A tourniquet cannot go there. Push clean cloth into the wound until it is full. Then press on it hard with both hands. Do not let up. Say done."
+    log: "Wound packed with cloth, two hand pressure"
+    next: shock
+  body_press:
+    do: "A tourniquet cannot go there. Press hard with both hands and do not let up. If the cloth soaks through, add more on top. Never lift it to look. Say done."
+    log: "Wound on the body, two hand pressure"
+    next: shock
+  hold:
+    do: "Keep the pressure on. If the cloth soaks through, add more on top. Do not lift it to look."
+    then: shock
+  shock:
+    ask: "Any pale, cold, sweaty skin, or confusion?"
+    yes: shock_do
+    no: help
+    unsure: shock_do
+  shock_do:
+    do: "That is shock. Lay them flat and cover them to keep them warm. Give nothing to eat or drink. Say done."
+    log: "Signs of shock. Laid flat and kept warm"
+    next: help
+  help:
+    do: "Send someone for help now, or start satellite S O S if any phone has it. Keep the pressure on until help takes over."
+    log: "Evacuation advised"
+    then: finish
+  finish:
+    end: "Bleeding steps complete. Say report for the handoff note, or tell me if anything changes."
+  minor_kind:
+    ask: "Is it a small cut or scrape, or is it deep or gaping open?"
+    pick: "Small, or deep?"
+    unsure: minor_press
+    choices:
+      small:
+        means: "a small cut, a scrape, or a paper cut"
+        words: [small, tiny, little, scrape, scratch, paper, nick, shallow, minor]
+        goto: small_clean
+      deep:
+        means: "deep, long, or gaping open"
+        words: [deep, gaping, gape, long, wide, open, big, large, bad]
+        goto: minor_press
+  small_clean:
+    worse: {pattern: "gushing|spurting|pouring|squirting|soaking through|won.?t stop|everywhere", goto: press}
+    do: "Good. Rinse it with clean water. Then press on it with a clean cloth for a few minutes. Say done."
+    log: "Small cut rinsed and pressed"
+    next: small_end
+  small_end:
+    end: "Cover it with a clean dressing and keep it dry. Watch for redness, swelling, or pus over the next days."
+  minor_press:
+    worse: {pattern: "gushing|spurting|pouring|squirting|soaking through|won.?t stop|everywhere", goto: press}
+    do: "Press on it with a clean cloth for ten minutes without lifting. I am timing it. Say done when the bleeding has stopped."
+    timer: 600
+    log: "Pressure applied to the wound"
+    next: minor_clean
+  minor_clean:
+    worse: {pattern: "gushing|spurting|pouring|squirting|soaking through|won.?t stop|everywhere", goto: press}
+    do: "Rinse it with clean water and cover it with a clean dressing. Say done."
+    log: "Wound rinsed and covered"
+    next: minor_end
+  minor_end:
+    end: "A deep cut may need stitches. Get it seen today if you can. Tell me if the bleeding starts again."
+  nose:
+    do: "Sit up and lean forward. Pinch the soft part of the nose shut and breathe through the mouth. Hold it for ten minutes without letting go. I am timing it. Say done when you are pinching."
+    timer: 600
+    log: "Nosebleed. Leaning forward, nose pinched"
+    next: nose_check
+  nose_check:
+    ask: "After the ten minutes, has it stopped?"
+    yes: nose_end
+    no: nose_again
+    unsure: nose_again
+  nose_again:
+    do: "Pinch for ten more minutes. If it is still bleeding after that, it needs a doctor."
+    timer: 600
+    then: nose_end
+  nose_end:
+    end: "Do not blow or pick the nose for the rest of the day. Tell me if anything changes."

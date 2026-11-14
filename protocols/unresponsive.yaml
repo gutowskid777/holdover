@@ -1,0 +1,127 @@
+id: unresponsive
+title: Unresponsive or not breathing
+short: the person who collapsed
+priority: 1
+when: "someone collapsed, fainted, passed out, will not wake up or answer, is not breathing, has no pulse, or was pulled from the water not moving"
+facts:
+  - "Push in the center of the chest, about two inches deep, at about two pushes per second."
+  - "Let the chest come all the way back up between pushes."
+  - "If you are not trained in rescue breaths, hands only is fine. Do not stop pushing."
+  - "If you are trained, give two breaths after every thirty pushes. Breaths matter most after drowning."
+  - "Gasping is not breathing. Keep pushing."
+  - "Switch with another person every two minutes if you can."
+  - "Cracking sounds from the ribs can happen. Keep going."
+  - "If a defibrillator arrives, turn it on and follow its voice."
+  - "After a faint, stay lying down for a few minutes and get up slowly."
+alarms:
+  - "(not|isn'?t|stopped|quit|no longer) breathing"
+  - "(not|isn'?t|stopped) (responding|moving|waking)"
+  - "\\b(unresponsive|unconscious|passed out|blacked out|collapsed|went limp|gone limp|no pulse)\\b"
+  - "(won'?t|will not|can'?t) wake"
+entries:
+  - {words: ["awake now", "woke up", "woke back up", "came to", "came around", "came back", "conscious again"], goto: awake}
+start: shout
+nodes:
+  shout:
+    do: "Tap their shoulders hard and shout their name."
+    then: respond
+  respond:
+    ask: "Did they wake up, move, or make a sound?"
+    yes: awake
+    no: breathing
+    unsure: breathing
+  breathing:
+    ask: "Watch the chest for ten seconds. Are they breathing normally? Gasping does not count."
+    yes: recovery
+    no: cpr_position
+    unsure: cpr_position
+  recovery:
+    do: "Roll them onto their side, top knee bent, head tilted back so the airway stays open. Say done when they are on their side."
+    log: "Breathing. Placed in the recovery position"
+    worse: {pattern: "(not|isn.?t|stopped|quit) breathing|no pulse|turning blue", goto: cpr_position}
+    next: recovery_help
+  recovery_help:
+    do: "Send someone for help, or start satellite S O S."
+    log: "Evacuation advised"
+    then: watch
+  watch:
+    end: "Stay with them and watch the breathing. Tell me at once if it stops."
+  cpr_position:
+    do: "We need to start C P R. I will help you. Lay them flat on their back on firm ground and kneel beside the chest. Say done."
+    log: "Not breathing normally"
+    next: aed
+  aed:
+    do: "If anyone else is here, send them for help and for a defibrillator. You stay and push."
+    then: cpr
+  cpr:
+    ask: "Heel of one hand on the center of the chest, other hand on top, arms straight. Push hard and fast, two inches deep, to my beat. Do not stop. Tell me if they start breathing."
+    metronome: 110
+    log: "CPR started"
+    quiet: true
+    steady: true
+    unsure: cpr_keep
+    question: "Keep pushing on the chest. Tell me if they start breathing, or if you need to switch."
+    choices:
+      going:
+        means: "the caller is pushing, counting, or still doing compressions"
+        words: [pushing, pressing, compressing, compressions, counting, going, one, two, three, four, "not breathing", "isnt breathing", "isn't breathing", "no breathing", nothing]
+        goto: cpr_keep
+      gasp:
+        means: "the person is gasping, gurgling, or taking odd breaths now and then"
+        words: [gasping, gasp, gasps, gasped, gurgling, gurgle, snoring]
+        goto: gasp
+      breathing:
+        means: "the person started breathing normally, coughed, moved, or woke up"
+        words: [breathing, breathed, breathes, coughed, coughing, woke, awake, moved, alive]
+        goto: revived
+      tired:
+        means: "the caller is tired, hurting, or wants to switch"
+        words: [tired, exhausted, switch, swap, arms]
+        goto: swap
+  cpr_keep:
+    ask: "Keep going. Hard and fast. Do not stop."
+    metronome: 110
+    quiet: true
+    steady: true
+    unsure: cpr_keep
+    question: "Keep pushing on the chest. Tell me if they start breathing, or if you need to switch."
+    choices:
+      going:
+        means: "the caller is pushing, counting, or still doing compressions"
+        words: [pushing, pressing, compressing, compressions, counting, going, one, two, three, four, "not breathing", "isnt breathing", "isn't breathing", "no breathing", nothing]
+        goto: cpr_keep
+      gasp:
+        means: "the person is gasping, gurgling, or taking odd breaths now and then"
+        words: [gasping, gasp, gasps, gasped, gurgling, gurgle, snoring]
+        goto: gasp
+      breathing:
+        means: "the person started breathing normally, coughed, moved, or woke up"
+        words: [breathing, breathed, breathes, coughed, coughing, woke, awake, moved, alive]
+        goto: revived
+      tired:
+        means: "the caller is tired, hurting, or wants to switch"
+        words: [tired, exhausted, switch, swap, arms]
+        goto: swap
+  gasp:
+    do: "Gasping is not breathing. Keep pushing."
+    then: cpr_keep
+  revived:
+    ask: "Stop and look for five seconds. Are they breathing normally, or moving on purpose?"
+    steady: true
+    yes: recovery
+    no: cpr_keep
+    unsure: cpr_keep
+  swap:
+    do: "Switch with someone else in under five seconds. If you are alone, keep going as best you can."
+    then: cpr_keep
+  awake:
+    ask: "Are they fully awake and making sense now?"
+    yes: faint
+    no: recovery
+    unsure: recovery
+  faint:
+    do: "That sounds like a faint. Keep them lying flat and raise their legs. Loosen tight clothing. Stay down for a few minutes. Say done."
+    log: "Woke up. Treated as a faint: flat, legs raised"
+    next: faint_end
+  faint_end:
+    end: "Get up slowly. Check for injuries from the fall. If they faint again, or have chest pain or trouble breathing, they need a doctor. Tell me what else is wrong."

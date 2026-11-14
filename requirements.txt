@@ -1,0 +1,7 @@
+mlx-vlm>=0.7.8
+fastapi
+uvicorn[standard]
+pyyaml
+httpx
+huggingface_hub[cli]
+websockets

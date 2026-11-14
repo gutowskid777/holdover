@@ -1,0 +1,78 @@
+id: allergic
+title: Allergic reaction or sting
+short: the allergic reaction
+priority: 2
+when: "a bee or wasp sting, an insect or spider bite, or a reaction after a food like peanuts or a medicine: hives, itching, swelling face, throat closing up, wheezing"
+facts:
+  - "The injector goes into the outer thigh. It works through clothing."
+  - "Hold the injector in place for a slow count of three. If the label says longer, follow the label."
+  - "A second injector can be used after five minutes if they are not better."
+  - "Epinephrine wears off. A hospital is still needed even if they feel fine."
+  - "Antihistamine pills help hives but do not stop a severe reaction."
+  - "Scrape a stinger out sideways with a card or a fingernail. Do not squeeze it."
+  - "If they feel faint, lay them flat. Do not let them stand or walk."
+  - "Something cold on a sting, wrapped in cloth, eases pain and swelling."
+start: signs
+nodes:
+  signs:
+    ask: "Is there trouble breathing, a swollen tongue or throat, or feeling faint?"
+    yes: epi_have
+    no: mild
+    unsure: epi_have
+  epi_have:
+    ask: "Is there an epinephrine injector, like an Epi Pen?"
+    yes: epi_use
+    no: no_epi
+    unsure: no_epi
+  epi_use:
+    do: "Use it now. Pull off the safety cap. Press the tip hard into the outer thigh. Through clothing is fine. Hold it for a slow count of three. Say done when it is in."
+    log: "Epinephrine injector given"
+    cant: no_epi
+    next: position
+  no_epi:
+    do: "Ask everyone nearby if they carry one. If there is an antihistamine and they can swallow, give it now."
+    log: "No epinephrine available"
+    then: position
+  position:
+    ask: "Which is worse right now: the breathing, or feeling faint?"
+    pick: "The breathing, or feeling faint?"
+    unsure: sit
+    choices:
+      breathing:
+        means: "breathing is hard, wheezing, or gasping"
+        words: [breathing, breathe, wheezing, wheeze, gasping, throat, chest]
+        goto: sit
+      faint:
+        means: "breathing is okay, but they feel faint, dizzy, or weak"
+        words: [faint, dizzy, weak, lightheaded, pale, woozy]
+        goto: flat
+  sit:
+    do: "Sit them up, leaning slightly forward."
+    then: source
+  flat:
+    do: "Lay them flat and raise their legs."
+    then: source
+  source:
+    do: "Remove the cause if you can. Scrape out a stinger with a card, or stop eating the food. Say done."
+    next: second
+  second:
+    do: "Send for help or start satellite S O S. I am timing five minutes. If they are not better by then and you have a second injector, use it in the other thigh."
+    timer: 300
+    log: "Evacuation advised. Five minute recheck started"
+    then: finish
+  mild:
+    do: "That sounds mild for now. If there is a stinger, scrape it out with a card. Wash the spot and put something cold on it, wrapped in cloth. Say done."
+    log: "Mild reaction. Stinger removed, cold applied"
+    next: mild_pill
+  mild_pill:
+    do: "Take an antihistamine if you have one. I will check on the breathing again."
+    then: watch
+  watch:
+    ask: "Is it staying mild? Say no if breathing gets hard, the face or lips swell, or hives spread."
+    yes: mild_end
+    no: epi_have
+    unsure: epi_have
+  mild_end:
+    end: "Keep watching for an hour. Tell me at once if breathing gets hard or the face swells."
+  finish:
+    end: "Allergy steps complete. A hospital is still needed, even if they feel better. Say report for the handoff note."

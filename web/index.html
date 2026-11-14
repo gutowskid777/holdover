@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holdover</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#0a0b0d; --panel:#111316; --line:#23262b; --ink:#f3f1ec; --dim:#8b8f97;
+  --hot:#ff4a26; --ok:#7dffa1; --warn:#ffc53d;
+  --sans: ui-rounded, "SF Pro Rounded", -apple-system, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.mono{font-family:var(--mono);letter-spacing:.04em}
+
+/* ---------- start screen */
+#start{position:fixed;inset:0;display:grid;place-items:center;z-index:20;background:
+  radial-gradient(900px 500px at 50% 110%, rgba(255,74,38,.28), transparent 70%), var(--bg)}
+#start .in{text-align:center;max-width:820px;padding:0 32px}
+#start h1{font-size:clamp(72px,13vw,168px);font-weight:800;letter-spacing:-.05em;line-height:.9}
+#start h1 b{color:var(--hot)}
+#start p{font-size:24px;color:var(--dim);margin:22px 0 44px}
+#go{font-size:26px;font-weight:700;padding:22px 54px;border-radius:999px;background:var(--hot);color:#140400;
+  box-shadow:0 0 0 0 rgba(255,74,38,.6);animation:ring 1.8s infinite}
+@keyframes ring{to{box-shadow:0 0 0 34px rgba(255,74,38,0)}}
+#start .facts{display:flex;gap:28px;justify-content:center;margin-top:46px;color:var(--dim);font-size:13px}
+#start .facts span b{color:var(--ok);font-weight:600}
+
+/* ---------- call screen */
+#call{display:grid;grid-template-columns:1fr 440px;grid-template-rows:54px 1fr 76px;height:100%}
+header{grid-column:1/3;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--line)}
+header .logo{font-weight:800;font-size:20px;letter-spacing:-.03em}
+header .logo b{color:var(--hot)}
+.pill{font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--dim);display:flex;gap:8px;align-items:center}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.pill.ok{color:var(--ok);border-color:rgba(125,255,161,.35)} .pill.ok i{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.pill.bad{color:var(--warn);border-color:rgba(255,197,61,.4)} .pill.bad i{background:var(--warn)}
+header .sp{flex:1}
+#clock{font-size:15px;color:var(--ink)}
+
+#stage{position:relative;overflow:hidden;background:#000}
+#cam{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:saturate(.9) contrast(1.05)}
+#nocam{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:15px}
+#shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent 22%,transparent 52%,rgba(0,0,0,.9));pointer-events:none}
+
+/* dispatcher tile */
+#disp{position:absolute;left:20px;top:20px;width:210px;height:150px;border-radius:18px;background:rgba(12,13,15,.86);
+  border:1px solid var(--line);display:grid;place-items:center;backdrop-filter:blur(14px)}
+#orb{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff9a78,var(--hot) 55%,#7a1600);
+  transition:transform .08s linear;box-shadow:0 0 40px rgba(255,74,38,.45)}
+#disp.talk #orb{animation:talk .42s ease-in-out infinite alternate}
+#disp.think #orb{animation:think 1s linear infinite;filter:saturate(.5)}
+@keyframes talk{from{transform:scale(.9)}to{transform:scale(1.2)}}
+@keyframes think{50%{transform:scale(.8);opacity:.6}}
+#disp span{position:absolute;bottom:10px;left:14px;font-size:11px;color:var(--dim)}
+#disp em{position:absolute;top:10px;right:12px;font-size:10px;font-style:normal;color:var(--ok)}
+
+#scene{position:absolute;right:20px;top:20px;display:flex;gap:9px;align-items:center;font-size:11px;padding:8px 13px;border-radius:999px;
+  background:rgba(12,13,15,.8);border:1px solid var(--line);color:var(--dim);backdrop-filter:blur(12px);max-width:46%}
+#scene i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}
+#scene.look i{background:#9cc7ff;animation:think 1s infinite} #scene.hit{color:#9cc7ff;border-color:rgba(156,199,255,.5)} #scene.hit i{background:#9cc7ff}
+/* captions */
+#caps{position:absolute;left:0;right:0;bottom:0;padding:26px 34px 30px}
+#said{font-size:clamp(26px,3vw,44px);font-weight:700;line-height:1.15;letter-spacing:-.02em;text-wrap:balance;max-width:22em}
+#heard{margin-top:14px;font-size:19px;color:var(--dim);min-height:26px}
+#heard b{color:var(--ink);font-weight:500}
+#heard.live b{color:var(--ok)}
+
+/* camera capture */
+#snap{position:absolute;inset:0;display:none;place-items:center;pointer-events:none}
+#snap.on{display:grid}
+#snap .frame{position:absolute;inset:9% 16%;border:3px solid var(--ok);border-radius:26px;box-shadow:0 0 0 2000px rgba(0,0,0,.35)}
+#snap .n{font-size:150px;font-weight:800;color:var(--ok);text-shadow:0 0 40px #000}
+#snap .t{position:absolute;top:11%;font-size:15px;color:var(--ok)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#flash.on{animation:fl .45s}
+@keyframes fl{from{opacity:.9}to{opacity:0}}
+
+/* right rail */
+#rail{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+#proto{padding:20px 22px 0}
+#proto small{font-size:11px;color:var(--dim)}
+#proto h2{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-top:4px;min-height:34px}
+#step{margin:16px 22px 0;padding:18px;border-radius:16px;background:#181b1f;border:1px solid var(--line)}
+#step .k{font-size:11px;color:var(--hot)}
+#step .s{font-size:19px;line-height:1.3;margin-top:8px;font-weight:600}
+#chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+#chips button{padding:10px 16px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:600;background:#0f1113}
+#chips button:hover{border-color:var(--hot);color:var(--hot)}
+#aids{display:flex;gap:12px;margin:14px 22px 0}
+#aids>div{flex:1;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:none}
+#aids>div.on{display:block}
+#aids small{font-size:10px;color:var(--dim)}
+#aids b{display:block;font-size:34px;font-family:var(--mono);font-weight:600;margin-top:2px}
+#beat.on{border-color:var(--hot)} #beat b{color:var(--hot)}
+#beat.tick{background:rgba(255,74,38,.28)}
+#std{display:none;margin:12px 22px 0;padding:12px 14px;border:1px solid rgba(125,255,161,.35);border-radius:14px;font-size:11px;line-height:1.7;color:var(--dim)}
+#std.on{display:block} #std b{color:var(--ok);font-weight:600;font-size:13px}
+#loglist>div.voice p{color:#d9a8ff}
+#log{flex:1;min-height:0;overflow:auto;margin:16px 0 0;padding:0 22px 12px;border-top:1px solid var(--line)}
+#log h3{font-size:11px;color:var(--dim);font-weight:500;padding:14px 0 8px;position:sticky;top:0;background:var(--panel)}
+#loglist>div{display:grid;grid-template-columns:48px 1fr;gap:10px;font-size:13px;line-height:1.35;padding:6px 0;border-top:1px dashed #1c1f23}
+#loglist>div span{color:var(--dim)} #loglist>div.action p{color:var(--ok)} #loglist>div.protocol p{color:var(--hot);font-weight:700}
+#loglist>div.camera p{color:#9cc7ff}
+#meter{padding:12px 22px;border-top:1px solid var(--line);font-size:11px;color:var(--dim);line-height:1.6}
+#meter b{color:var(--ok);font-weight:500}
+
+footer{grid-column:1/3;border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px}
+#say{flex:1;height:46px;border-radius:12px;border:1px solid var(--line);background:#0f1113;color:var(--ink);padding:0 16px;font:inherit;font-size:16px;outline:none}
+#say:focus{border-color:var(--hot)}
+footer button{height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--line);font-weight:600;font-size:14px}
+footer button:hover{border-color:var(--ink)}
+footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
+
+/* report */
+#report{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;place-items:center;z-index:30;backdrop-filter:blur(8px)}
+#report.on{display:grid}
+#sheet{width:min(760px,92vw);max-height:86vh;overflow:auto;background:#f6f3ec;color:#14130f;border-radius:18px;padding:38px 44px}
+#sheet h2{font-size:34px;letter-spacing:-.03em} #sheet .meta{font-family:var(--mono);font-size:12px;color:#6a675f;margin:6px 0 22px}
+#sheet .sum{font-size:19px;line-height:1.45;font-weight:600;border-left:4px solid var(--hot);padding-left:16px}
+#sheet ul{list-style:none;padding:0;margin:22px 0 0;font-family:var(--mono);font-size:13px;line-height:1.5}
+#sheet li{padding:7px 0;border-top:1px solid #dcd7cb}
+#sheet .row{display:flex;gap:10px;margin-top:26px}
+#sheet button{padding:12px 18px;border-radius:10px;border:1px solid #14130f;font-weight:700}
+#sheet small{display:block;margin-top:18px;color:#6a675f}
+@media print{body *{visibility:hidden}#sheet,#sheet *{visibility:visible}#sheet{position:fixed;inset:0;max-height:none;width:auto}#sheet .row{display:none}}
+</style>
+</head>
+<body>
+
+<div id="start">
+  <div class="in">
+    <h1>Hold<b>over</b></h1>
+    <p>The emergency line that works when there is no signal.</p>
+    <button id="go">Start the call</button>
+    <div class="facts mono">
+      <span><b id="f-net">●</b> <span id="f-net-t">checking network</span></span>
+      <span><b>●</b> runs on this Mac</span>
+      <span><b>●</b> <span id="f-proto">7</span> first aid protocols</span>
+    </div>
+  </div>
+</div>
+
+<div id="call">
+  <header>
+    <div class="logo">Hold<b>over</b></div>
+    <div class="pill" id="p-net"><i></i><span class="mono">NETWORK</span></div>
+    <div class="pill" id="p-model"><i></i><span class="mono">BONSAI</span></div>
+    <div class="pill" id="p-speech"><i></i><span class="mono">ARGMAX</span></div>
+    <div class="sp"></div>
+    <div id="clock" class="mono">00:00</div>
+  </header>
+
+  <div id="stage">
+    <video id="cam" autoplay muted playsinline></video>
+    <div id="nocam">Camera is off. Holdover still works by voice.</div>
+    <div id="shade"></div>
+    <div id="disp"><div id="orb"></div><span class="mono">DISPATCH</span><em class="mono" id="think"></em></div>
+    <div id="scene" class="mono"><i></i><span id="scenet">CAMERA IDLE</span></div>
+    <div id="snap"><div class="frame"></div><div class="t mono">HOLD IT STILL IN THE FRAME</div><div class="n" id="snapn">3</div></div>
+    <div id="flash"></div>
+    <div id="caps">
+      <div id="said"></div>
+      <div id="heard"></div>
+    </div>
+  </div>
+
+  <div id="rail">
+    <div id="proto"><small class="mono">PROTOCOL</small><h2 id="title">Listening</h2></div>
+    <div id="step"><div class="k mono" id="kind">TELL ME WHAT IS HAPPENING</div><div class="s" id="steptext">Say it out loud, in your own words.</div><div id="chips"></div></div>
+    <div id="aids">
+      <div id="timer"><small class="mono">TIMER</small><b id="timern">00:00</b></div>
+      <div id="beat"><small class="mono">PUSH TO THE BEAT</small><b id="beatn">110</b></div>
+    </div>
+    <div id="std" class="mono"></div>
+    <div id="log"><h3 class="mono">TIMELINE FOR THE HANDOFF</h3><div id="loglist"></div></div>
+    <div id="meter" class="mono"></div>
+  </div>
+
+  <footer>
+    <input id="say" placeholder="Speak, or type here and press return" autocomplete="off">
+    <button id="b-look">Look at this</button>
+    <button id="b-report">Handoff note</button>
+    <button id="b-end" class="end">End call</button>
+  </footer>
+</div>
+
+<div id="report"><div id="sheet"></div></div>
+<canvas id="grab" hidden></canvas>
+
+<script>
+const $ = id => document.getElementById(id);
+let lastVoice = 0, talking = false;
+let ws, speech = null, t0 = 0, timerEnd = 0, beatTimer = null, audio, lastNode = null, capturing = false;
+
+/* ---------- network badge: the whole point is that this says OFFLINE */
+function net(){
+  const off = !navigator.onLine;
+  $('p-net').className = 'pill ' + (off ? 'ok' : 'bad');
+  $('p-net').lastElementChild.textContent = off ? 'WIFI OFF · 0 BYTES SENT' : 'WIFI ON · NOT USED';
+  $('f-net-t').textContent = off ? 'wifi is off' : 'wifi is on, not used';
+}
+addEventListener('online', net); addEventListener('offline', net); net();
+
+/* ---------- socket */
+function connect(){
+  ws = new WebSocket(`ws://${location.host}/ui`);
+  ws.onmessage = e => on(JSON.parse(e.data));
+  ws.onclose = () => setTimeout(connect, 800);
+}
+const send = m => ws && ws.readyState === 1 && ws.send(JSON.stringify(m));
+connect();
+
+function on(m){
+  if (m.type === 'hello'){ setSpeech(m.speech); $('f-proto').textContent = m.protocols.length; }
+  if (m.type === 'speech') setSpeech(m.speech);
+  if (m.type === 'hypothesis'){ $('heard').className = 'live'; $('heard').innerHTML = 'You: <b></b>'; $('heard').querySelector('b').textContent = m.text; }
+  if (m.type === 'heard'){ $('heard').className = ''; $('heard').innerHTML = (m.speaker ? `Voice ${m.speaker + 1}: ` : 'You: ') + '<b></b>'; $('heard').querySelector('b').textContent = m.text; think(true); }
+  if (m.type === 'speaking'){ $('disp').classList.toggle('talk', m.on); talking = m.on; }
+  if (m.type === 'level') $('orb').style.transform = `scale(${1 + Math.min(.5, m.rms * 3)})`;
+  if (m.type === 'state') state(m);
+  if (m.type === 'note'){ $('said').textContent = m.text; if (!speech) fallbackSpeak([m.text]); }
+  if (m.type === 'scene'){ $('scene').className = 'mono ' + (m.text ? 'hit' : ''); $('scenet').textContent = m.text ? 'CAMERA SEES: ' + m.text.toUpperCase() : `WATCHING · NOTHING TO NOTE · ${m.ms}MS`; }
+  if (m.type === 'hypothesis' || m.type === 'heard' || m.type === 'speaking') lastVoice = Date.now();
+  if (m.type === 'report') report(m);
+}
+function setSpeech(s){
+  speech = s;
+  $('p-speech').className = 'pill ' + (s ? 'ok' : 'bad');
+  $('p-speech').lastElementChild.textContent = s ? `ARGMAX${s.pro ? ' PRO' : ''} · VOICE ON DEVICE` : 'ARGMAX · VOICE HELPER OFF';
+}
+function think(on){ $('disp').classList.toggle('think', on); if (on) $('think').textContent = 'thinking'; }
+
+/* ---------- state from the brain */
+function state(s){
+  think(false);
+  if (s.model){ $('p-model').className = 'pill ok'; $('p-model').lastElementChild.textContent = s.model.replace('-mlx','').toUpperCase() + ' · LOCAL'; }
+  if (s.say.length){ $('said').textContent = s.say[s.say.length - 1]; if (!speech) fallbackSpeak(s.say); }
+  $('title').textContent = s.title || 'Listening';
+  const kinds = {ask:'ANSWER OUT LOUD', do:'DO THIS, THEN SAY DONE', look:'SHOW THE CAMERA', end:'STEPS COMPLETE', triage:'TELL ME WHAT IS HAPPENING'};
+  $('kind').textContent = kinds[s.kind] || '';
+  $('steptext').textContent = s.step || 'Say it out loud, in your own words.';
+  const chips = $('chips'); chips.innerHTML = '';
+  const add = (label, text) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => say(text); chips.append(b); };
+  if (s.kind === 'do') add('Done', 'done');
+  for (const [k, v] of Object.entries(s.choices || {})) add(k === 'yes' ? 'Yes' : k === 'no' ? 'No' : v, k === 'yes' || k === 'no' ? k : v);
+  // timer
+  if (s.node !== lastNode){
+    if (s.timer){ timerEnd = Date.now() + s.timer * 1000; $('timer').classList.add('on'); }
+    else if (s.kind !== 'do' || !timerEnd) { /* keep a running timer across later steps */ }
+    lastNode = s.node;
+  }
+  beat(s.metronome);
+  // timeline
+  $('loglist').innerHTML = '';
+  for (const e of s.log){
+    const d = document.createElement('div'); d.className = e.kind;
+    const mm = String(Math.floor(e.t / 60)).padStart(2,'0') + ':' + String(e.t % 60).padStart(2,'0');
+    d.innerHTML = `<span class="mono">${mm}</span><p></p>`; d.querySelector('p').textContent = e.text; $('loglist').append(d);
+  }
+  $('log').scrollTop = 1e6;
+  // meter
+  const calls = (s.meter || []).map(c => `${c[0]} ${Math.round(c[1] * 1000)}ms`).join(' · ');
+  $('meter').innerHTML = `<b>ON-DEVICE</b> ${s.think_ms != null ? `answered in ${s.think_ms}ms` : ''}<br>${calls || 'rules only, no model needed'}`;
+  $('think').textContent = s.think_ms != null ? s.think_ms + 'ms' : '';
+  const ck = s.clock || {}, f = t => String(Math.floor(t / 60)) + ':' + String(t % 60).padStart(2, '0');
+  $('std').classList.toggle('on', ck.recognized != null);
+  if (ck.recognized != null) $('std').innerHTML = `ARREST RECOGNIZED <b>${f(ck.recognized)}</b> · 911 TARGET 1:30<br>` + (ck.compression != null ? `FIRST COMPRESSION <b>${f(ck.compression)}</b> · 911 TARGET 2:30` : 'FIRST COMPRESSION ...');
+  if (s.turns) $('meter').innerHTML += `<br><b>${Math.round(100 * (s.turns - s.model_turns) / s.turns)}%</b> of your replies needed no AI model (${s.turns - s.model_turns} of ${s.turns})`;
+  if (s.capture) capture(s.capture);
+}
+
+/* ---------- talking to it */
+function say(text){ if (!text.trim()) return; send({type:'text', text}); }
+$('say').onkeydown = e => { if (e.key === 'Enter'){ say($('say').value); $('say').value = ''; } };
+$('b-look').onclick = () => capture('describe');
+$('b-report').onclick = () => send({type:'report'});
+$('b-end').onclick = () => { send({type:'report'}); };
+
+function fallbackSpeak(lines){   // only when the Argmax voice helper is not running
+  if (!('speechSynthesis' in window)) return;
+  for (const l of lines){ const u = new SpeechSynthesisUtterance(l); u.rate = 1.05;
+    u.onstart = () => $('disp').classList.add('talk'); u.onend = () => $('disp').classList.remove('talk'); speechSynthesis.speak(u); }
+}
+
+/* ---------- camera */
+async function camera(){
+  try{
+    const s = await navigator.mediaDevices.getUserMedia({video:{width:1280,height:720}, audio:false});
+    $('cam').srcObject = s; $('nocam').style.display = 'none';
+  }catch(e){ $('nocam').textContent = 'Camera is off. Holdover still works by voice.'; }
+}
+function capture(mode){
+  if (capturing || !$('cam').srcObject) { if (!$('cam').srcObject) return; }
+  if (capturing) return;
+  capturing = true;
+  let n = 3; $('snapn').textContent = n; $('snap').classList.add('on');
+  const iv = setInterval(() => {
+    n--; if (n > 0){ $('snapn').textContent = n; return; }
+    clearInterval(iv); $('snap').classList.remove('on');
+    const v = $('cam'), c = $('grab'); c.width = 768; c.height = Math.round(768 * v.videoHeight / v.videoWidth);
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    $('flash').classList.remove('on'); void $('flash').offsetWidth; $('flash').classList.add('on');
+    send({type:'frame', mode, image: c.toDataURL('image/jpeg', .85).split(',')[1]});
+    think(true); capturing = false;
+  }, 900);
+}
+
+/* ---------- idle watching: spare compute looks through the camera when nobody is talking */
+setInterval(() => {
+  const v = $('cam');
+  if (!t0 || !v.srcObject || capturing || talking || Date.now() - lastVoice < 3500 || $('report').classList.contains('on')) return;
+  const c = $('grab'); c.width = 512; c.height = Math.round(512 * v.videoHeight / v.videoWidth);
+  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+  $('scene').className = 'mono look'; $('scenet').textContent = 'WATCHING';
+  send({type:'frame', mode:'ambient', image: c.toDataURL('image/jpeg', .8).split(',')[1]});
+}, 7000);
+
+/* ---------- timer and CPR beat */
+setInterval(() => {
+  if (t0){ const s = Math.floor((Date.now() - t0) / 1000); $('clock').textContent = String(Math.floor(s / 60)).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0'); }
+  if (timerEnd){ const r = Math.max(0, Math.round((timerEnd - Date.now()) / 1000));
+    $('timern').textContent = String(Math.floor(r / 60)).padStart(2,'0') + ':' + String(r % 60).padStart(2,'0');
+    if (!r){ timerEnd = 0; send({type:'timer'}); $('timer').classList.remove('on'); } }
+}, 250);
+function beat(bpm){
+  clearInterval(beatTimer); beatTimer = null; $('beat').classList.toggle('on', !!bpm);
+  if (!bpm) return;
+  $('beatn').textContent = bpm; audio = audio || new AudioContext();
+  beatTimer = setInterval(() => {
+    const o = audio.createOscillator(), g = audio.createGain(); o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+    g.gain.setValueAtTime(.25, audio.currentTime); g.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .07); o.start(); o.stop(audio.currentTime + .08);
+    $('beat').classList.add('tick'); setTimeout(() => $('beat').classList.remove('tick'), 110);
+  }, 60000 / bpm);
+}
+
+/* ---------- handoff note */
+function report(r){
+  const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  $('sheet').innerHTML = `<h2>Handoff note</h2><div class="meta">STARTED ${esc(r.started)} · ON THE LINE ${esc(r.duration)} · WRITTEN ON-DEVICE</div>
+    <div class="sum">${esc(r.summary || 'No actions logged yet.')}</div>
+    <ul>${r.timeline.map(l => `<li>${esc(l)}</li>`).join('')}</ul>
+    <small>Saved to ${esc(r.file)}. First aid guidance only. Not a diagnosis.</small>
+    <div class="row"><button onclick="print()">Print</button><button onclick="document.getElementById('report').classList.remove('on')">Back to the call</button></div>`;
+  $('report').classList.add('on');
+}
+
+/* ---------- go */
+$('go').onclick = async () => {
+  $('start').style.display = 'none'; t0 = Date.now();
+  audio = new AudioContext();
+  await camera();
+  send({type:'start'});
+  $('say').focus();
+};
+</script>
+</body>
+</html>

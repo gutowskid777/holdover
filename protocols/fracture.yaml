@@ -1,0 +1,96 @@
+id: fracture
+title: Broken bone or sprain
+short: the injured limb
+priority: 4
+when: "after a fall, a twist, or a blow: a hurt, swollen, possibly broken, dislocated, or sprained arm, leg, wrist, ankle, or knee"
+facts:
+  - "Never try to straighten a broken limb or push a bone back in."
+  - "A splint must hold the joint above and the joint below the injury still."
+  - "A splint can be a stick, a trekking pole, a rolled jacket, a sleeping pad, or the other leg."
+  - "Ties should be snug but not tight enough to cut off blood flow."
+  - "Cold goes on for twenty minutes at a time, wrapped in cloth, never straight on skin."
+  - "Do not put weight on a limb that might be broken."
+  - "An arm can be held in a sling made from a shirt or a jacket."
+  - "A sprain needs rest, cold, a snug wrap, and to be raised."
+start: neck
+nodes:
+  neck:
+    ask: "Is there neck or back pain, or was it a fall from high up, like off a ledge or a roof?"
+    yes_words: [neck, back, spine, ledge, roof, cliff, ladder, tree, feet, high, height]
+    yes: spine
+    no: bone
+    unsure: bone
+  spine:
+    do: "Do not move them. Keep the head and neck still, in the position you found them. Hold the head steady with your hands. Send someone for help or start satellite S O S."
+    log: "Possible spine injury, not moved. Evacuation advised"
+    then: finish
+  bone:
+    ask: "Is bone sticking out, or is there an open wound over the injury?"
+    yes: open
+    no: usable
+    unsure: usable
+  open:
+    do: "Do not push the bone back. Cover the wound with a clean cloth and press around it, not on the bone. Say done."
+    log: "Open fracture, wound covered"
+    next: still
+  usable:
+    ask: "Can they move it, and put a little weight or grip on it?"
+    yes: sprain
+    no: shape
+    unsure: shape
+  sprain:
+    do: "That sounds like a sprain. Rest it. Put something cold on it, wrapped in cloth, for twenty minutes. I am timing it. Say done."
+    timer: 1200
+    log: "Usable limb. Treated as a sprain: rest and cold"
+    next: sprain_wrap
+  sprain_wrap:
+    do: "Wrap it snugly with a bandage or a strip of cloth, not tight, and raise it. Say done."
+    log: "Wrapped and raised"
+    next: sprain_end
+  sprain_end:
+    end: "Go easy on it. If it cannot take weight tomorrow, or it goes numb or looks bent, treat it as a break. Tell me if anything changes."
+  shape:
+    look: "Show me the injury. Hold it up to the camera."
+    question: "How does the injured limb look?"
+    pick: "Is it bent out of shape, or just swollen?"
+    unsure: still
+    choices:
+      deformed:
+        means: "bent, twisted, or out of shape"
+        words: [bent, twisted, crooked, deformed, angle, wrong, sideways]
+        goto: still
+      swollen:
+        means: "swollen or bruised but straight"
+        words: [swollen, swelling, bruised, bruise, purple, puffy, straight]
+        goto: maybe
+  maybe:
+    do: "It may be a bad sprain, but treat it as a break until an X ray says otherwise."
+    then: splint
+  still:
+    do: "Do not try to straighten it. Keep the limb exactly as it is."
+    log: "Limb kept in the position found"
+    then: splint
+  splint:
+    do: "Make a splint. Lay a stick, a pole, or a rolled jacket along the limb. Tie it above and below the injury so the joints on both sides cannot move. Snug, not tight. Say done when it is tied."
+    log: "Splint applied"
+    cant: no_splint
+    next: circulation
+  no_splint:
+    do: "Then hold it still another way. Strap an arm to the chest with a shirt, or tie a leg to the other leg with padding between. Say done."
+    log: "Limb held still without a splint"
+    next: circulation
+  circulation:
+    ask: "Check past the injury. Are the fingers or toes warm, pink, and able to feel your touch?"
+    yes: cold
+    no: loosen
+    unsure: loosen
+  loosen:
+    do: "Loosen the ties a little. If they stay cold, blue, or numb, this is urgent and needs evacuation now. Say done."
+    log: "Poor circulation past the injury, ties loosened"
+    next: cold
+  cold:
+    do: "Put something cold on it, wrapped in cloth, for twenty minutes. Raise the limb if that does not hurt. I am timing it."
+    timer: 1200
+    then: finish
+  finish:
+    end: "It needs an X ray. No weight on it. Say report for the handoff note, or tell me if anything changes."

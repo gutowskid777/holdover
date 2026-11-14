@@ -1,0 +1,86 @@
+id: choking
+title: Choking
+short: the choking
+priority: 1
+when: "a piece of food or an object physically stuck in the throat right now, cannot speak or cough (not an allergy)"
+facts:
+  - "If they can cough or speak, let them cough. Do not hit their back."
+  - "Back blows go between the shoulder blades with the heel of the hand."
+  - "Thrusts go just above the belly button, pulling in and up."
+  - "For a pregnant or very large person, do the thrusts on the chest instead."
+  - "A baby under one year never gets belly thrusts. Use back blows and chest thrusts."
+  - "Never sweep a finger blindly in the mouth."
+  - "If they pass out, start C P R."
+  - "If you are alone and choking, push your belly hard onto the back of a chair or a log."
+alarms:
+  - "\\bchoking\\b"
+start: cough
+nodes:
+  cough:
+    ask: "Can they cough, speak, or breathe at all?"
+    yes: encourage
+    no: baby
+    unsure: baby
+  encourage:
+    do: "Tell them to keep coughing hard. Do not hit their back yet. Stay right with them."
+    then: cleared_mild
+  cleared_mild:
+    ask: "Did it come out?"
+    yes: clear_mild
+    no: cough
+    unsure: cough
+  clear_mild:
+    end: "Good. Sit down and breathe. If the cough or a sore throat does not settle, see a doctor. Tell me if anything changes."
+  baby:
+    ask: "Is it a baby under one year old?"
+    yes: baby_blows
+    no: blows
+    unsure: blows
+  blows:
+    do: "Stand behind and slightly to the side. Lean them forward. Give five hard blows between the shoulder blades with the heel of your hand. Say done."
+    log: "Five back blows"
+    next: out1
+  out1:
+    ask: "Did it come out?"
+    yes: clear
+    no: thrusts
+    unsure: thrusts
+  thrusts:
+    do: "Stand behind them. Make a fist just above the belly button, grab it with your other hand, and pull sharply in and up, five times. Say done."
+    log: "Five abdominal thrusts"
+    next: cleared
+  cleared:
+    ask: "Is the airway clear now?"
+    yes: clear
+    no: conscious
+    unsure: conscious
+  conscious:
+    ask: "Are they still awake?"
+    yes: blows
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  clear:
+    end: "Good. Sit them down. If you used thrusts, they should see a doctor after. Tell me if anything changes."
+  baby_blows:
+    do: "Lay the baby face down along your forearm, head lower than the chest, and hold the jaw. Give five firm blows between the shoulder blades. Say done."
+    log: "Baby: five back blows"
+    next: baby_out
+  baby_out:
+    ask: "Did it come out?"
+    yes: clear
+    no: baby_thrusts
+    unsure: baby_thrusts
+  baby_thrusts:
+    do: "Turn the baby face up. Put two fingers on the center of the chest, just below the nipples. Give five quick pushes. Never squeeze the belly. Say done."
+    log: "Baby: five chest thrusts"
+    next: baby_cleared
+  baby_cleared:
+    ask: "Is the airway clear now?"
+    yes: clear
+    no: baby_awake
+    unsure: baby_awake
+  baby_awake:
+    ask: "Is the baby still awake?"
+    yes: baby_blows
+    no: "@unresponsive"
+    unsure: "@unresponsive"

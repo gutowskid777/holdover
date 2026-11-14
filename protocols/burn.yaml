@@ -1,0 +1,122 @@
+id: burn
+title: Burn
+short: the burn
+priority: 3
+when: "skin burned by fire, a stove, a hot pan, hot water, steam, the sun, a chemical, or electricity, small or large"
+facts:
+  - "Nothing on the burn before it is cooled. No ice, no butter."
+  - "Never pop blisters."
+  - "Leave anything that is stuck to the skin."
+  - "If water is short, use any clean cool liquid, or a cool wet cloth that you keep wetting again."
+  - "Cool the burn for twenty minutes, even if it already feels better."
+  - "Plastic wrap or a clean cloth that is not fluffy is a good cover. Lay it on, do not wrap it tight."
+  - "Keep the rest of the person warm while you cool the burn."
+  - "Burns to the face with soot around the nose or mouth can swell the airway. That needs evacuation."
+start: fire
+nodes:
+  fire:
+    ask: "Is anything still burning, or still touching the heat?"
+    yes: stop
+    no: cause
+    unsure: stop
+  stop:
+    do: "Get away from the heat. If clothing is on fire: stop, drop, and roll, or smother it with a blanket. Say done when it is out."
+    next: cause
+  cause:
+    ask: "What caused the burn?"
+    pick: "Was it heat, a chemical, or electricity?"
+    unsure: cool
+    choices:
+      heat:
+        means: "fire, a hot object, hot liquid, steam, or the sun"
+        words: [fire, campfire, flame, stove, pan, pot, water, boiling, coffee, tea, soup, steam, oil, grease, grill, ember, coal, sun, sunburn, iron, exhaust, oven]
+        goto: cool
+      chemical:
+        means: "a chemical such as acid, bleach, or a cleaner"
+        words: [chemical, acid, bleach, cleaner, lye, solvent]
+        goto: chem
+      electric:
+        means: "electricity or lightning"
+        words: [electric, electricity, electrical, lightning, wire, outlet, shock, shocked, power]
+        goto: elec_safe
+  chem:
+    do: "Brush off any dry chemical. Then flush with a lot of water for twenty minutes, and take off clothing the chemical touched. I am timing it. Say done when the water is running."
+    timer: 1200
+    log: "Chemical burn, flushing with water"
+    next: size
+  elec_safe:
+    do: "Do not touch them until the power is off or they are clear of the wire. Say done when it is safe."
+    log: "Electrical burn"
+    next: elec
+  elec:
+    ask: "Are they awake and breathing normally?"
+    yes: cool
+    no: "@unresponsive"
+    unsure: "@unresponsive"
+  cool:
+    do: "Cool the burn with cool running water, or pour clean cool water over it, for twenty minutes. Not ice. I am timing it. Say done when the water is on it."
+    timer: 1200
+    log: "Cooling with water started"
+    next: jewelry
+  jewelry:
+    do: "While it cools, take off rings, watches, and tight clothing near the burn before it swells. Leave anything that is stuck to the skin. Say done."
+    next: see
+  see:
+    look: "Show me the burn. Hold it up to the camera."
+    question: "How does the burned skin look?"
+    pick: "Is the skin red, blistered, or white and leathery?"
+    unsure: size
+    choices:
+      red:
+        means: "red skin with no blisters"
+        words: [red, pink, sunburn]
+        goto: minor
+      blister:
+        means: "blisters, or wet and raw skin"
+        words: [blister, blistered, blistering, bubble, raw, wet, peeling]
+        goto: blister
+      deep:
+        means: "white, leathery, brown, or charred skin"
+        words: [white, leathery, brown, black, charred, waxy]
+        goto: deep
+  minor:
+    do: "That is a surface burn."
+    then: size
+  blister:
+    do: "That is a deeper burn. Do not pop the blisters."
+    log: "Blistered burn"
+    then: size
+  deep:
+    do: "That is a deep burn. It needs a hospital."
+    log: "Deep burn"
+    then: size
+  size:
+    ask: "Is the burn bigger than the palm of the hand, or on the face, hands, feet, groin, or over a joint?"
+    yes: smoke
+    no: cover_small
+    unsure: smoke
+  smoke:
+    ask: "Any burns to the face, soot around the nose or mouth, or trouble breathing?"
+    yes: airway
+    no: serious
+    unsure: airway
+  airway:
+    do: "The airway can swell. Sit them upright. This needs evacuation now. Send someone for help, or start satellite S O S."
+    log: "Possible airway burn. Urgent evacuation advised"
+    then: cover
+  serious:
+    do: "This one needs a doctor. Send someone for help, or start satellite S O S."
+    log: "Serious burn, evacuation advised"
+    then: cover
+  cover:
+    do: "After the twenty minutes of cooling, cover the burn loosely with plastic wrap or a clean cloth that is not fluffy. Say done."
+    log: "Burn covered"
+    next: finish
+  finish:
+    end: "Burn steps complete. Keep the rest of the body warm. Say report for the handoff note."
+  cover_small:
+    do: "Finish the twenty minutes of cooling. Then cover it loosely with a clean cloth that is not fluffy. Say done."
+    log: "Small burn cooled and covered"
+    next: small_end
+  small_end:
+    end: "A small burn heals on its own. Leave any blisters alone, and watch for redness spreading or pus."
