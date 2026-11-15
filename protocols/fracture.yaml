@@ -3,6 +3,7 @@ title: Broken bone or sprain
 short: the injured limb
 priority: 4
 when: "after a fall, a twist, or a blow: a hurt, swollen, possibly broken, dislocated, or sprained arm, leg, wrist, ankle, or knee"
+triggers: ["broke my", "broken bone", "broken arm", "broken leg", "broken wrist", "broken ankle", "fracture", "sprain", "sprained", "rolled my ankle", "twisted my ankle", "dislocated"]
 facts:
   - "Never try to straighten a broken limb or push a bone back in."
   - "A splint must hold the joint above and the joint below the injury still."

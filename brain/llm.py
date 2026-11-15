@@ -72,8 +72,9 @@ class Bonsai:
                   "this topic, so you are answering from general first-aid knowledge. Rules: at most 3 short "
                   "sentences in plain spoken words. Give only basic, widely accepted first aid. Never diagnose: "
                   "you may say what it could be, as a possibility. Always say which warning signs mean they need a "
-                  "doctor or emergency care. If one missing detail would change the advice, ask ONE short question "
-                  "instead of advising. No lists, no symbols, no abbreviations.")
+                  "doctor or emergency care. If one missing detail would change the advice, ask ONE short open question "
+                  "instead of advising. If the caller is the hurt person say 'you'; for someone else say he, she or "
+                  "the name the caller uses, never 'they' or 'them'. No lists, no symbols, no abbreviations.")
         msgs = [{"role": "system", "content": system}]
         for who, said in list(turns)[-6:]:
             msgs.append({"role": "user" if who == "caller" else "assistant", "content": said})
@@ -86,6 +87,55 @@ class Bonsai:
         self.calls.append(("open", round(time.time() - t, 2)))
         parts = re.split(r"(?<=[.!?])\s+", out)
         return " ".join(parts[:3]).replace("*", "")
+
+    def voice(self, turns, step, unclear=False):
+        """Say the next checked step like a person would, fitted to what the caller just said.
+        The step text is the only medical content allowed in the reply."""
+        convo = "\n".join(("Caller: " if w == "caller" else "Holdover: ") + t for w, t in turns[-6:])
+        system = (
+            "You are Holdover, a calm first-aid dispatcher on a voice call. You get the conversation so far and the "
+            "CHECKED STEP that must be said next. Say that step in your own spoken words so it fits the conversation.\n"
+            "Rules:\n"
+            "- Open with a few words that reflect what the caller just told you (never 'I heard you said').\n"
+            "- Keep every instruction and warning from the checked step. Add no other medical advice or reassurance.\n"
+            "- A question becomes ONE open, natural question. Never say 'yes or no'. Never ask what they already told you.\n"
+            "- The caller who is hurt is 'you'. Someone else is he, she, or a name. Never 'they', 'them', 'the patient'.\n"
+            "- One to three short sentences. Plain spoken words.\n\n"
+            "Example 1\nCaller: my buddy cut his leg with a hatchet theres blood everywhere\n"
+            "CHECKED STEP: Press hard on the wound right now. Use a cloth, a shirt, or your bare hand. Say done when you are pressing.\n"
+            "Reply: Okay, a hatchet cut to his leg. Press hard on the wound right now with a cloth, a shirt, or your bare hand. Tell me when you are pressing.\n\n"
+            "Example 2\nCaller: i got into a fight last week and my arm is bruised\n"
+            "CHECKED STEP: Are they on blood thinners, or do they bruise or bleed very easily?\n"
+            "Reply: Got it, a week old bruise from a fight. Are you on any blood thinners, or do you tend to bruise or bleed easily?\n\n"
+            "Example 3\nCaller: she grabbed the hot pan\nHoldover: How big is the burn?\nCaller: its her whole palm\n"
+            "CHECKED STEP: Show me the burn. Hold it up to the camera.\n"
+            "Reply: Her whole palm, okay. Hold her hand up to the camera so I can see the burn.")
+        note = "\n(The caller's last answer did not settle this step. Ask it again in a different, simpler way.)" if unclear else ""
+        user = f"{convo}\nCHECKED STEP: {step}{note}\nReply:"
+        out = self.chat("voice", system, user, max_tokens=90, temperature=0.4, presence_penalty=0.2)
+        return out.replace("\n", " ").replace("*", "").strip().strip('"')
+
+    def converse(self, system, turns, max_tokens=110):
+        """One spoken reply in a real conversation. `system` carries the style rules and the checked protocol."""
+        msgs = [{"role": "system", "content": system}]
+        for who, said in turns:
+            role = "user" if who == "caller" else "assistant"
+            if msgs[-1]["role"] == role:                 # the chat template wants strict turns
+                msgs[-1]["content"] += " " + said
+            else:
+                msgs.append({"role": role, "content": said})
+        if msgs[-1]["role"] != "user":
+            msgs.append({"role": "user", "content": "(the caller is waiting)"})
+        body = {"model": self._model(), "max_tokens": max_tokens, **SAMPLING, "temperature": 0.4,
+                "presence_penalty": 0.3, "messages": msgs}
+        t = time.time()
+        r = self.http.post(self.url + "/chat/completions", json=body)
+        r.raise_for_status()
+        j = r.json()
+        out = (j["choices"][0]["message"]["content"] or "").strip().replace("\n", " ")
+        self.calls.append(("talk", round(time.time() - t, 2)))
+        self.last_usage = j.get("usage", {})
+        return out
 
     def prefill(self, items, text):
         """Skip-ahead. items = [(id, question, {label: meaning})]. Returns {id: label} ONLY for questions
@@ -106,7 +156,9 @@ class Bonsai:
             "'number: LABEL', using exactly one of that question's labels in capitals, nothing else. "
             "Example: if the caller said 'its gushing and nothing is in the wound', and question 1 is "
             "'Is the blood pouring?' and question 2 is 'Is something stuck in the wound?', you reply:\n1: YES\n2: NO\n"
-            "Use only what the caller actually said. Never guess. Leave out questions the caller did not answer. "
+            "Use what the caller actually said. A clear implication counts: 'I got into a fight' answers 'did it come "
+            "from a hit' with YES. If the caller is talking about their own injury ('my arm', 'I fell'), then the hurt "
+            "person is awake, talking and breathing. Do not invent facts. Leave out questions the caller did not answer. "
             "If none were answered, reply NONE.",
             f"Caller said: \"{text}\"\n\nQuestions:\n" + "\n".join(qs) + "\n\nAnswered:",
             max_tokens=6 * len(items) + 4, temperature=0.0)

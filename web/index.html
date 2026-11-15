@@ -64,7 +64,7 @@ header .sp{flex:1}
 #scene.look i{background:#9cc7ff;animation:think 1s infinite} #scene.hit{color:#9cc7ff;border-color:rgba(156,199,255,.5)} #scene.hit i{background:#9cc7ff}
 /* captions */
 #caps{position:absolute;left:0;right:0;bottom:0;padding:26px 34px 30px}
-#said{font-size:clamp(26px,3vw,44px);font-weight:700;line-height:1.15;letter-spacing:-.02em;text-wrap:balance;max-width:22em}
+#said{font-size:clamp(22px,2.4vw,36px);font-weight:700;line-height:1.15;letter-spacing:-.02em;text-wrap:balance;max-width:22em}
 #heard{margin-top:14px;font-size:19px;color:var(--dim);min-height:26px}
 #heard b{color:var(--ink);font-weight:500}
 #heard.live b{color:var(--ok)}
@@ -86,7 +86,7 @@ header .sp{flex:1}
 #proto h2{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-top:4px;min-height:34px}
 #step{margin:16px 22px 0;padding:18px;border-radius:16px;background:#181b1f;border:1px solid var(--line)}
 #step .k{font-size:11px;color:var(--hot)}
-#step .s{font-size:19px;line-height:1.3;margin-top:8px;font-weight:600}
+#step .s{font-size:14px;line-height:1.4;margin-top:8px;font-weight:500;color:#c9c6bf}
 #chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 #chips button{padding:10px 16px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:600;background:#0f1113}
 #chips button:hover{border-color:var(--hot);color:var(--hot)}
@@ -99,6 +99,7 @@ header .sp{flex:1}
 #beat.tick{background:rgba(255,74,38,.28)}
 #std{display:none;margin:12px 22px 0;padding:12px 14px;border:1px solid rgba(125,255,161,.35);border-radius:14px;font-size:11px;line-height:1.7;color:var(--dim)}
 #std.on{display:block} #std b{color:var(--ok);font-weight:600;font-size:13px}
+#loglist>div.you p{color:var(--ink)} #loglist>div.you span{color:var(--ok)} #loglist>div.hold p{color:#ffb9a6} #loglist>div.hold span{color:var(--hot)}
 #loglist>div.voice p{color:#d9a8ff} #loglist>div.open p{color:var(--warn)} #loglist>div.skip p{color:var(--warn)}
 #log{flex:1;min-height:0;overflow:auto;margin:16px 0 0;padding:0 22px 12px;border-top:1px solid var(--line)}
 #log h3{font-size:11px;color:var(--dim);font-weight:500;padding:14px 0 8px;position:sticky;top:0;background:var(--panel)}
@@ -175,13 +176,13 @@ footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
 
   <div id="rail">
     <div id="proto"><small class="mono">PROTOCOL</small><h2 id="title">Listening</h2></div>
-    <div id="step"><div class="k mono" id="kind">TELL ME WHAT IS HAPPENING</div><div class="s" id="steptext">Say it out loud, in your own words.</div><div id="openflag" class="mono">OPEN MODE · BONSAI ANSWERING FROM GENERAL KNOWLEDGE, NOT A CHECKED PROTOCOL</div><div id="chips"></div></div>
+    <div id="step"><div class="k mono" id="kind">JUST TALK</div><div class="s" id="steptext">Say what happened, in your own words. No buttons needed.</div><div id="openflag" class="mono">OPEN MODE · BONSAI ANSWERING FROM GENERAL KNOWLEDGE, NOT A CHECKED PROTOCOL</div><div id="chips"></div></div>
     <div id="aids">
       <div id="timer"><small class="mono">TIMER</small><b id="timern">00:00</b></div>
       <div id="beat"><small class="mono">PUSH TO THE BEAT</small><b id="beatn">110</b></div>
     </div>
     <div id="std" class="mono"></div>
-    <div id="log"><h3 class="mono">TIMELINE FOR THE HANDOFF</h3><div id="loglist"></div></div>
+    <div id="log"><h3 class="mono">CONVERSATION</h3><div id="loglist"></div></div>
     <div id="meter" class="mono"></div>
   </div>
 
@@ -225,8 +226,8 @@ function on(m){
   if (m.type === 'hello'){ setSpeech(m.speech); $('f-proto').textContent = m.protocols.length; }
   if (m.type === 'speech') setSpeech(m.speech);
   if (m.type === 'hypothesis'){ $('heard').className = 'live'; $('heard').innerHTML = 'You: <b></b>'; $('heard').querySelector('b').textContent = m.text; }
-  if (m.type === 'heard'){ $('heard').className = ''; $('heard').innerHTML = (m.speaker ? `Voice ${m.speaker + 1}: ` : 'You: ') + '<b></b>'; $('heard').querySelector('b').textContent = m.text; think(true); }
-  if (m.type === 'speaking'){ $('disp').classList.toggle('talk', m.on); talking = m.on; }
+  if (m.type === 'heard'){ line('you', 'YOU', m.text); $('heard').className = ''; $('heard').innerHTML = (m.speaker ? `Voice ${m.speaker + 1}: ` : 'You: ') + '<b></b>'; $('heard').querySelector('b').textContent = m.text; think(true); }
+  if (m.type === 'speaking'){ $('disp').classList.toggle('talk', m.on); talking = m.on; if (m.on && pendingSaid){ $('said').textContent = pendingSaid; pendingSaid = null; } }
   if (m.type === 'level') $('orb').style.transform = `scale(${1 + Math.min(.5, m.rms * 3)})`;
   if (m.type === 'state') state(m);
   if (m.type === 'controls') controls(m);
@@ -234,6 +235,18 @@ function on(m){
   if (m.type === 'scene'){ $('scene').className = 'mono ' + (m.text ? 'hit' : ''); $('scenet').textContent = m.text ? 'CAMERA SEES: ' + m.text.toUpperCase() : `WATCHING · NOTHING TO NOTE · ${m.ms}MS`; }
   if (m.type === 'hypothesis' || m.type === 'heard' || m.type === 'speaking') lastVoice = Date.now();
   if (m.type === 'report') report(m);
+}
+let logSeen = 0;
+function line(cls, tag, text){
+  const d = document.createElement('div'); d.className = cls;
+  d.innerHTML = `<span class="mono">${tag}</span><p></p>`; d.querySelector('p').textContent = text;
+  $('loglist').append(d); $('log').scrollTop = 1e6;
+}
+let pendingSaid = null, pendingTimer = null;
+function showSaid(text){
+  if (!speech){ $('said').textContent = text; return; }
+  pendingSaid = text; clearTimeout(pendingTimer);
+  pendingTimer = setTimeout(() => { if (pendingSaid){ $('said').textContent = pendingSaid; pendingSaid = null; } }, 3500);
 }
 function setSpeech(s){
   speech = s;
@@ -246,19 +259,17 @@ function think(on){ $('disp').classList.toggle('think', on); if (on) $('think').
 function state(s){
   think(false);
   if (s.model){ $('p-model').className = 'pill ok'; $('p-model').lastElementChild.textContent = s.model.replace('-mlx','').toUpperCase() + ' · LOCAL'; }
-  if (s.say.length){ $('said').textContent = s.say[s.say.length - 1]; if (!speech) fallbackSpeak(s.say); }
+  if (s.say.length){ showSaid(s.say.join(' ')); if (!speech) fallbackSpeak(s.say); }
   $('title').textContent = s.title || 'Listening';
-  const kinds = {ask:'ANSWER OUT LOUD', do:'DO THIS, THEN SAY DONE', look:'SHOW THE CAMERA', end:'STEPS COMPLETE', triage:'TELL ME WHAT IS HAPPENING'};
-  $('kind').textContent = kinds[s.kind] || '';
-  $('steptext').textContent = s.step || 'Say it out loud, in your own words.';
   $('openflag').classList.toggle('on', !!s.open);
-  if (s.open){ $('title').textContent = 'Open conversation'; $('kind').textContent = 'TALK TO ME'; $('steptext').textContent = s.say.join(' '); }
-  const sk = (s.log || []).filter(e => e.kind === 'skip').length;
-  if (sk) $('kind').textContent += ` · SKIPPED ${sk} QUESTION${sk > 1 ? 'S' : ''} YOU ALREADY ANSWERED`;
-  const chips = $('chips'); chips.innerHTML = '';
-  const add = (label, text) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => say(text); chips.append(b); };
-  if (s.kind === 'do') add('Done', 'done');
-  for (const [k, v] of Object.entries(s.choices || {})) add(k === 'yes' ? 'Yes' : k === 'no' ? 'No' : v, k === 'yes' || k === 'no' ? k : v);
+  const exact = !s.checked || !s.checked.length || s.checked.join(' ') === s.say.join(' ');
+  if (s.open){ $('title').textContent = 'Open conversation'; $('kind').textContent = 'NO CHECKED PROTOCOL FOR THIS'; $('steptext').textContent = 'Bonsai is answering from general first aid knowledge.'; }
+  else if (s.checked && s.checked.length){ $('kind').textContent = exact ? 'CHECKED STEP, WORD FOR WORD' : 'THE CHECKED STEP BEHIND THIS REPLY'; $('steptext').textContent = s.checked.join(' '); }
+  else if (!s.title){ $('kind').textContent = 'JUST TALK'; $('steptext').textContent = 'Say what happened, in your own words. No buttons needed.'; }
+  $('chips').innerHTML = '';
+  if (s.say.length) line('hold', 'HOLD', s.say.join(' '));
+  for (const e of (s.log || []).slice(logSeen)) if (['protocol','skip','camera','action','voice'].includes(e.kind)) line(e.kind, e.kind === 'protocol' ? 'TREE' : e.kind === 'skip' ? 'SKIP' : e.kind === 'camera' ? 'CAM' : e.kind === 'voice' ? 'MIC' : 'DONE', e.text);
+  logSeen = (s.log || []).length;
   // timer
   if (s.node !== lastNode){
     if (s.timer){ timerEnd = Date.now() + s.timer * 1000; $('timer').classList.add('on'); }
@@ -266,14 +277,6 @@ function state(s){
     lastNode = s.node;
   }
   beat(s.metronome);
-  // timeline
-  $('loglist').innerHTML = '';
-  for (const e of s.log){
-    const d = document.createElement('div'); d.className = e.kind;
-    const mm = String(Math.floor(e.t / 60)).padStart(2,'0') + ':' + String(e.t % 60).padStart(2,'0');
-    d.innerHTML = `<span class="mono">${mm}</span><p></p>`; d.querySelector('p').textContent = e.text; $('loglist').append(d);
-  }
-  $('log').scrollTop = 1e6;
   // meter
   const calls = (s.meter || []).map(c => `${c[0]} ${Math.round(c[1] * 1000)}ms`).join(' · ');
   $('meter').innerHTML = `<b>ON-DEVICE</b> ${s.think_ms != null ? `answered in ${s.think_ms}ms` : ''}<br>${calls || 'rules only, no model needed'}`;
@@ -373,7 +376,7 @@ function report(r){
 
 /* ---------- go */
 $('go').onclick = async () => {
-  $('start').style.display = 'none'; t0 = Date.now();
+  $('start').style.display = 'none'; t0 = Date.now(); $('loglist').innerHTML = ''; logSeen = 0;
   audio = new AudioContext();
   await camera();
   send({type:'start'});

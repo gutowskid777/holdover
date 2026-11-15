@@ -261,38 +261,46 @@ final class Voice {
     }
 
     /// Speak one line through the default output. Returns when it has finished (or was stopped).
+    /// Sentences are prepared one ahead of playback, so there is no gap while the next one is generated.
     func speak(_ text: String) async {
         setStopped(false)
         if useSystemVoice {
             await systemSpeak(text)
             return
         }
-        for sentence in sentences(text) {
-            if isStopped { return }
-            await speakSentence(sentence)
+        let parts = sentences(text)
+        let (stream, feed) = AsyncStream<(String, URL?)>.makeStream()
+        let producer = Task { [weak self] in
+            for part in parts {
+                guard let self, !self.isStopped else { break }
+                feed.yield((part, await self.prepare(part)))
+            }
+            feed.finish()
         }
+        for await (part, url) in stream {
+            if isStopped { break }
+            if let url { await playFile(url) } else { await systemSpeak(part) }
+        }
+        producer.cancel()
     }
 
     private func setStopped(_ v: Bool) { lock.lock(); stopped = v; lock.unlock() }
 
-    private func speakSentence(_ text: String) async {
+    /// The clip for one sentence: from the cache, or generated now and cached.
+    private func prepare(_ text: String) async -> URL? {
         let file = cacheFile(text)
-        if useCache, FileManager.default.fileExists(atPath: file.path) {
-            await playFile(file)
-            return
-        }
-        guard tts != nil else { await systemSpeak(text); return }
+        if useCache, FileManager.default.fileExists(atPath: file.path) { return file }
+        guard tts != nil else { return nil }
         do {
-            // Generate the whole sentence first, then play it like a cached clip. The streaming
-            // play() path stalled on live lines and left the microphone muted.
             let t = Date()
             let r = try await render(text)
-            if isStopped { return }
+            if isStopped { return nil }
             try await save(r.samples, rate: r.rate, to: file)
             log(String(format: "generated live in %.1fs: %@", Date().timeIntervalSince(t), text))
-            await playFile(file)
+            return file
         } catch {
-            if !isStopped { log("argmax tts failed (\(error)); using system voice for this line"); await systemSpeak(text) }
+            if !isStopped { log("argmax tts failed (\(error)); using system voice for this line") }
+            return nil
         }
     }
 
@@ -511,6 +519,7 @@ final class Live {
     private var speakQueue: [(id: Int, text: String)] = []
     private var speaking = false
     private var muteUntil = Date.distantPast
+    private var lastSignal = Date()        // last time the microphone delivered real (non-zero) audio
 
     let endSilence = 0.85
     let maxTurn = 16.0
@@ -568,6 +577,22 @@ final class Live {
                 lock.lock(); let peak = levelPeak; levelPeak = 0; lock.unlock()
                 link.send(["type": "level", "rms": Double(min(1, peak * 6))])
             }
+            // Mic watchdog: macOS can silently stop the input stream when another app touches audio.
+            // A live microphone is never perfectly silent, so 3 seconds of nothing means: restart it.
+            if feedFile == nil {
+                lock.lock(); let silentFor = now.timeIntervalSince(lastSignal); lock.unlock()
+                if silentFor > 3 {
+                    log("MIC WENT SILENT for 3s. Restarting the microphone.")
+                    lock.lock(); lastSignal = now; lock.unlock()
+                    ears.whisper.audioProcessor.stopRecording()
+                    try? await Task.sleep(nanoseconds: 200_000_000)
+                    do {
+                        try ears.whisper.audioProcessor.startRecordingLive(inputDeviceID: nil) { [weak self] samples in
+                            self?.ingest(samples)
+                        }
+                    } catch { log("could not restart the microphone: \(error)") }
+                }
+            }
             if feedFile == nil, now.timeIntervalSince(lastPurge) > 20 {
                 lastPurge = now
                 ears.whisper.audioProcessor.purgeAudioSamples(keepingLast: 0)
@@ -614,6 +639,7 @@ final class Live {
         let dur = Double(samples.count) / 16000.0
 
         lock.lock(); defer { lock.unlock() }
+        if rms > 0.000001 { lastSignal = Date() }
         if speaking || Date() < muteUntil {       // half duplex: never hear our own voice
             buffer = []; preroll = []; inSpeech = false; quiet = 0; voiced = 0; turnDone = false
             return

@@ -13,7 +13,28 @@ PROTOCOLS = load_protocols(ROOT / "protocols")
 problems = validate(PROTOCOLS)
 assert not problems, problems
 llm = Bonsai()
+talker = Bonsai(os.environ.get("BONSAI_TALK_URL", "http://127.0.0.1:8081/v1"))   # the small model does the talking
 app = FastAPI()
+VERBATIM = {"unresponsive", "choking"}       # seconds matter: fixed words, pre-made voice clips, no rewording
+STRIP = re.compile(r"^(Yes or no\. |Pick one: |Say done, or say you cannot\.? ?)")
+
+
+def voiced(turns, lines, unclear):
+    """Reword the checked step into conversation. Falls back to the exact checked words on any problem."""
+    step = " ".join(STRIP.sub("", l) for l in lines).strip()
+    if not step:
+        return lines
+    try:
+        try:
+            out = talker.voice(turns, step, unclear)
+        except Exception:
+            out = llm.voice(turns, step, unclear)
+    except Exception:
+        return lines
+    out = re.sub(r"\b[Tt]hey are\b", "he is", out)
+    if not out or len(out.split()) > len(step.split()) * 2 + 25:
+        return lines
+    return [s for s in re.split(r"(?<=[.!?])\s+", out) if s]
 
 ADVICE = re.compile(r"\b(press|apply|put|give|take|call|raise|elevate|wrap|tie|cool|pour|remove|lay|sit|roll|push|use|try|should|need to|make sure|don'?t|do not|will be (ok|fine|alright)|going to be)\b", re.I)
 PLAIN = re.compile(r"^(yes|yeah|yep|no|nope|nah|ok|okay|done|got it|ready|next)\b", re.I)
@@ -68,6 +89,7 @@ class Hub:
         self.speak_id = 0
         self.last_node = None
         self.started = False
+        self.convo = []          # (who, text): the conversation as actually spoken
         self.muted = self.paused = False
         self.turns = self.model_turns = 0
         self.clock = {}          # seconds from call start: arrest recognized, first compression
@@ -125,7 +147,10 @@ class Hub:
             self.scene, self.scene_said = [], False
             self.turns = self.model_turns = 0
             self.clock, self.voices = {}, set()
-            await self.emit(self.session.start())
+            out = self.session.start()
+            out["say"] = ["Holdover here. I work with no signal.", "Tell me what happened."]
+            self.convo = [("dispatch", " ".join(out["say"]))]
+            await self.emit(out)
 
     async def hear(self, text, speaker=None):
         if not self.started or NOISE.match(text or "") or self.paused:
@@ -138,22 +163,28 @@ class Hub:
                 self.voices.add(speaker)
                 if len(self.voices) == 2:
                     self.session._log("voice", "A second voice joined the call (Argmax speaker labels)")
-            node = self.session.node or {}
-            want_ack = (len(text.split()) >= 6 and not text.rstrip().endswith("?") and not PLAIN.match(text.strip())
-                        and not node.get("metronome"))
-            ack_task = asyncio.create_task(asyncio.to_thread(acknowledge, text)) if want_ack else None
-            hear_task = asyncio.create_task(asyncio.to_thread(self.session.hear, text))
-            if ack_task:
-                ack = await ack_task
-                if ack and not hear_task.done():      # fill the thinking gap with a human line
-                    await self.ui({"type": "note", "text": ack, "ack": True})
-                    await self.speak(ack)
-            out = await hear_task
-            out["think_ms"] = round((time.time() - t) * 1000)
+            before = (self.session.node or {}).get("id")
+            self.convo.append(("caller", text))
+            out = await asyncio.to_thread(self.session.hear, text)
             self.turns += 1
-            if any(c[0] in ("triage", "interpret", "answer") for c in llm.calls[n_calls:]):
+            if any(c[0] in ("triage", "interpret", "answer", "skip-ahead") for c in llm.calls[n_calls:]):
                 self.model_turns += 1
-            await self.emit(out)
+            await self.finish(out, before, t)
+
+    async def finish(self, out, before, t):
+        """Turn the checked step into conversation (except where seconds matter), then speak it."""
+        node = self.session.node or {}
+        exact = (out["protocol"] in VERBATIM or node.get("steady") or node.get("metronome")
+                 or out.get("report") or out.get("open") or not out["say"])
+        out["checked"] = list(out["say"]) if not out.get("open") else []
+        if not exact:
+            unclear = before is not None and before == node.get("id")
+            out["say"] = await asyncio.to_thread(voiced, self.convo, out["say"], unclear)
+        if out["say"]:
+            self.convo.append(("dispatch", " ".join(out["say"])))
+        out["think_ms"] = round((time.time() - t) * 1000)
+        out["talk"] = [c for c in talker.calls[-1:]]
+        await self.emit(out)
 
     async def ambient(self, image):
         """Spare compute: while nobody is talking, look through the camera and remember what is there."""
@@ -167,23 +198,19 @@ class Hub:
             prev = self.scene[-1] if self.scene else None
             self.scene = (self.scene + [seen])[-3:]
             await self.ui({"type": "scene", "text": seen, "ms": ms})
-            if seen and prev and not self.lock.locked():
+            if seen and prev and seen != prev:
                 if not any(e["kind"] == "camera" and e["text"].startswith("Noticed") for e in self.session.log[-3:]):
                     self.session._log("camera", f"Noticed on camera: {seen}")
-                if self.session.proto is None and not self.scene_said:
-                    self.scene_said = True
-                    line = f"I can see {seen[0].lower() + seen[1:]}. Tell me what happened."
-                    await self.ui({"type": "note", "text": line})
-                    await self.speak(line)
         finally:
             self.glancing = False
 
     async def see(self, image, mode):
         async with self.lock:
             t = time.time()
+            before = (self.session.node or {}).get("id")
             out = await asyncio.to_thread(self.session.see, image, mode or "look")
-            out["think_ms"] = round((time.time() - t) * 1000)
-            await self.emit(out)
+            self.convo.append(("caller", "(I showed it to the camera.)"))
+            await self.finish(out, None, t)
 
     async def report(self):
         rep = await asyncio.to_thread(self.session.report)
@@ -254,6 +281,13 @@ async def ui_ws(ws: WebSocket):
                 await hub.speech.send_text(json.dumps({"type": "stop"}))
     except WebSocketDisconnect:
         hub.uis.discard(ws)
+        if not hub.uis:                      # the last screen closed: hang up, stop talking, stop listening
+            hub.started = False
+            if hub.speech:
+                try:
+                    await hub.speech.send_text(json.dumps({"type": "stop"}))
+                except Exception:
+                    pass
 
 
 @app.websocket("/speech")

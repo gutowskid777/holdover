@@ -3,6 +3,7 @@ title: Hypothermia
 short: the cold
 priority: 3
 when: "someone very cold, wet, shivering hard, clumsy, slurring words, or confused from cold"
+triggers: ["hypothermia", "freezing cold", "cant stop shivering", "shivering"]
 facts:
   - "Wet clothes pull heat away. Get them off and replace them with anything dry."
   - "Insulate them from the ground with a pad, a pack, or branches."

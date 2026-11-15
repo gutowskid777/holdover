@@ -3,6 +3,7 @@ title: Bleeding
 short: the bleeding
 priority: 2
 when: "any cut, scrape, gash, stab, nosebleed, or wound that is bleeding, small or large"
+triggers: ["bleeding", "bleed", "blood", "gash", "stabbed", "laceration", "cut myself", "cut my", "cut his", "cut her", "nosebleed"]
 facts:
   - "If there is no cloth, press with a bare hand."
   - "Never remove a soaked cloth. Add more on top."

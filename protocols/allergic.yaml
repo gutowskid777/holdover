@@ -3,6 +3,7 @@ title: Allergic reaction or sting
 short: the allergic reaction
 priority: 2
 when: "a bee or wasp sting, an insect or spider bite, or a reaction after a food like peanuts or a medicine: hives, itching, swelling face, throat closing up, wheezing"
+triggers: ["allergic", "allergy", "epipen", "epi pen", "hives", "anaphylaxis", "bee sting", "stung by", "wasp"]
 facts:
   - "The injector goes into the outer thigh. It works through clothing."
   - "Hold the injector in place for a slow count of three. If the label says longer, follow the label."

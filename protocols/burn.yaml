@@ -3,6 +3,7 @@ title: Burn
 short: the burn
 priority: 3
 when: "skin burned by fire, a stove, a hot pan, hot water, steam, a chemical, or electricity, small or large"
+triggers: ["burn", "burned", "burnt", "scalded", "scald"]
 facts:
   - "Nothing on the burn before it is cooled. No ice, no butter."
   - "Never pop blisters."

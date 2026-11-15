@@ -3,6 +3,7 @@ title: Choking
 short: the choking
 priority: 1
 when: "a piece of food or an object physically stuck in the throat right now, cannot speak or cough (not an allergy)"
+triggers: ["choking", "choked"]
 facts:
   - "If they can cough or speak, let them cough. Do not hit their back."
   - "Back blows go between the shoulder blades with the heel of the hand."

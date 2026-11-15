@@ -2,7 +2,7 @@
 ../protocols. The language model never writes treatment: it only decides which branch
 the caller is on, answers side questions from the protocol's own facts, and reads photos."""
 from __future__ import annotations
-import pathlib, re, time, yaml
+import pathlib, re, threading, time, yaml
 
 YES = re.compile(r"^(yes|yeah|yea|yep|yup|ya|correct|affirmative|uh huh|definitely|absolutely|i think so|it is|he is|she is|they are|i do|we do|i am|he does|she does|sure)\b", re.I)
 NO = re.compile(r"^(no|nope|nah|negative|not really|not yet|nothing|he isn'?t|she isn'?t|it isn'?t|they aren'?t|i don'?t think so|he doesn'?t|she doesn'?t|none)\b", re.I)
@@ -333,14 +333,18 @@ class Session:
         elif kind == "do" and "cant" in opts and CANT.search(text) and not ASKING.search(text):
             key = "cant"
         else:
+            ahead = None
+            if len(text.split()) >= 5 and not n.get("steady"):
+                ahead = threading.Thread(target=self._prefill, args=(text,))
+                ahead.start()
             key = self._fast(text, kind, opts) or self._keywords(text, n) \
                 or self.llm.interpret(question_of(n) if kind != "do" else n[kind], {k: m for k, (m, _) in opts.items()}, text)
+            if ahead:
+                ahead.join(timeout=8)
 
         if key in opts:
             self.misses = 0
             self.history.append((self.proto["id"], n["id"]))
-            if len(text.split()) >= 12:
-                self._prefill(text)
             if kind == "do":
                 if key == "done" and n.get("log"):
                     self._log("action", n["log"])

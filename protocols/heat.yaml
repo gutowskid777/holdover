@@ -3,6 +3,7 @@ title: Heat illness
 short: the overheating
 priority: 2
 when: "someone overheated in the sun or after hard effort: dizzy, cramping, nauseous, headache, very hot skin, confused, or fainted from heat"
+triggers: ["heat stroke", "heatstroke", "heat exhaustion", "overheated", "overheating"]
 facts:
   - "Confusion or passing out in the heat means heat stroke. Cool first, fast."
   - "Cold water on the whole body cools fastest. A stream or a lake works if you hold them safely."

@@ -3,6 +3,7 @@ title: Snake or animal bite
 short: the bite
 priority: 3
 when: "bitten by a snake, a dog, a wild animal, or something that was not seen"
+triggers: ["snake", "snakebite", "rattlesnake", "copperhead", "dog bite", "bit by", "bitten by"]
 facts:
   - "Never cut a snake bite, suck it, ice it, or put a tourniquet or a pressure bandage on it."
   - "No alcohol, and no painkillers like aspirin or ibuprofen after a snake bite."
