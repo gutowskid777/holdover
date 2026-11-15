@@ -114,6 +114,7 @@ footer{grid-column:1/3;border-top:1px solid var(--line);display:flex;align-items
 #say:focus{border-color:var(--hot)}
 footer button{height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--line);font-weight:600;font-size:14px}
 footer button:hover{border-color:var(--ink)}
+footer button.icon{width:46px;padding:0;display:grid;place-items:center}
 footer button.off{background:#2a2206;border-color:#6b5a12;color:var(--warn)}
 #paused{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.6);font-size:44px;font-weight:800;letter-spacing:-.02em;z-index:5}
 #paused.on{display:grid}
@@ -188,8 +189,8 @@ footer .end{background:#2a0d07;border-color:#5b1c0e;color:#ff8f76}
 
   <footer>
     <input id="say" placeholder="Speak, or type here and press return" autocomplete="off">
-    <button id="b-mic">Mic on</button>
-    <button id="b-pause">Pause</button>
+    <button id="b-mic" class="icon" title="Microphone on. Click to mute." aria-label="Mute microphone"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <button id="b-pause" class="icon" title="Pause the call" aria-label="Pause"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
     <button id="b-look">Look at this</button>
     <button id="b-report">Handoff note</button>
     <button id="b-end" class="end">End call</button>
@@ -291,16 +292,19 @@ function state(s){
 /* ---------- talking to it */
 function say(text){ if (!text.trim()) return; send({type:'text', text}); }
 $('say').onkeydown = e => { if (e.key === 'Enter'){ say($('say').value); $('say').value = ''; } };
+const ICONS = {mic: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>`, micOff: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9v2a3 3 0 0 0 5 2.2M15 9.5V6a3 3 0 0 0-5.7-1.3M5 11a7 7 0 0 0 11 5.7M19 11a7 7 0 0 1-.6 2.8M12 18v3M4 4l16 16"/></svg>`, pause: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`, play: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>`};
 let micOn = true, paused = false;
 $('b-mic').onclick = () => send({type:'mic', on: !micOn});
 $('b-pause').onclick = () => send({type:'pause', on: !paused});
 function controls(m){
   micOn = !m.muted; paused = m.paused;
-  $('b-mic').textContent = micOn ? 'Mic on' : 'Mic off'; $('b-mic').classList.toggle('off', !micOn);
-  $('b-pause').textContent = paused ? 'Resume' : 'Pause'; $('b-pause').classList.toggle('off', paused);
+  $('b-mic').innerHTML = micOn ? ICONS.mic : ICONS.micOff; $('b-mic').classList.toggle('off', !micOn);
+  $('b-mic').title = micOn ? 'Microphone on. Click to mute.' : 'Microphone off. Click to turn on.';
+  $('b-pause').innerHTML = paused ? ICONS.play : ICONS.pause; $('b-pause').classList.toggle('off', paused);
+  $('b-pause').title = paused ? 'Resume the call' : 'Pause the call';
   $('paused').classList.toggle('on', paused);
   if (!micOn || paused){ $('heard').className = ''; $('heard').textContent = paused ? 'Paused. Nothing is being heard.' : 'Mic is off. Type below.'; }
-  if (paused) beat(0);
+  if (paused){ beat(0); clearTimeout(pendingTimer); pendingSaid = null; $('disp').classList.remove('talk','think'); $('scene').className = 'mono'; $('scenet').textContent = 'PAUSED'; if ('speechSynthesis' in window) speechSynthesis.cancel(); }
 }
 $('b-look').onclick = () => capture('describe');
 $('b-report').onclick = () => send({type:'report'});
@@ -320,6 +324,7 @@ async function camera(){
   }catch(e){ $('nocam').textContent = 'Camera is off. Holdover still works by voice.'; }
 }
 function capture(mode){
+  if (paused) return;
   if (capturing || !$('cam').srcObject) { if (!$('cam').srcObject) return; }
   if (capturing) return;
   capturing = true;
@@ -348,6 +353,7 @@ setInterval(() => {
 /* ---------- timer and CPR beat */
 setInterval(() => {
   if (t0){ const s = Math.floor((Date.now() - t0) / 1000); $('clock').textContent = String(Math.floor(s / 60)).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0'); }
+  if (timerEnd && paused){ timerEnd += 250; }
   if (timerEnd){ const r = Math.max(0, Math.round((timerEnd - Date.now()) / 1000));
     $('timern').textContent = String(Math.floor(r / 60)).padStart(2,'0') + ':' + String(r % 60).padStart(2,'0');
     if (!r){ timerEnd = 0; send({type:'timer'}); $('timer').classList.remove('on'); } }

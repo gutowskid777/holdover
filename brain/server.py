@@ -217,6 +217,8 @@ class Hub:
             self.glancing = False
 
     async def see(self, image, mode):
+        if self.paused:
+            return
         async with self.lock:
             t = time.time()
             before = (self.session.node or {}).get("id")
@@ -271,7 +273,8 @@ async def ui_ws(ws: WebSocket):
             if m["type"] == "start":
                 asyncio.create_task(hub.start())
             elif m["type"] == "text":
-                asyncio.create_task(hub.hear(m["text"]))
+                if not hub.paused:
+                    asyncio.create_task(hub.hear(m["text"]))
             elif m["type"] == "frame" and m.get("mode") == "ambient":
                 asyncio.create_task(hub.ambient(m["image"]))
             elif m["type"] == "frame":
