@@ -340,7 +340,7 @@ class Session:
             key = self._fast(text, kind, opts) or self._keywords(text, n) \
                 or self.llm.interpret(question_of(n) if kind != "do" else n[kind], {k: m for k, (m, _) in opts.items()}, text)
             if ahead:
-                ahead.join(timeout=8)
+                ahead.join(timeout=0.6)      # never make the caller wait on skip-ahead; late answers still count
 
         if key in opts:
             self.misses = 0

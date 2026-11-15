@@ -165,7 +165,15 @@ class Hub:
                     self.session._log("voice", "A second voice joined the call (Argmax speaker labels)")
             before = (self.session.node or {}).get("id")
             self.convo.append(("caller", text))
+            # Talk at once: a short pre-made word plays while the models work on the real reply.
+            filler = None
+            if (self.session.proto or {}).get("id") not in VERBATIM and len(text.split()) >= 2:
+                self.filler_i = getattr(self, "filler_i", 0) + 1
+                filler = ["Got it.", "Alright.", "I hear you."][self.filler_i % 3]
+                await self.ui({"type": "note", "text": filler})
+                await self.speak(filler)
             out = await asyncio.to_thread(self.session.hear, text)
+            out["filler"] = filler
             self.turns += 1
             if any(c[0] in ("triage", "interpret", "answer", "skip-ahead") for c in llm.calls[n_calls:]):
                 self.model_turns += 1
@@ -180,6 +188,10 @@ class Hub:
         if not exact:
             unclear = before is not None and before == node.get("id")
             out["say"] = await asyncio.to_thread(voiced, self.convo, out["say"], unclear)
+            if out.get("filler") and out["say"]:      # the filler already said it; do not say "Okay" twice
+                first = re.sub(r"^(Okay|Ok|Got it|Alright|All right|I hear you|Understood)[,.!]?\s+", "", out["say"][0], flags=re.I)
+                if first:
+                    out["say"][0] = first[0].upper() + first[1:]
         if out["say"]:
             self.convo.append(("dispatch", " ".join(out["say"])))
         out["think_ms"] = round((time.time() - t) * 1000)
